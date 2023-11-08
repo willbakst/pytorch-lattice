@@ -1,0 +1,56 @@
+site_name: PyTorch Lattice
+theme:
+  name: material
+  features:
+    - content.code.annotation
+    - content.code.copy
+    - content.code.link
+    - navigation.footer
+    - navigation.sections
+    - navigation.tabs
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - toc.integrate
+  language: en
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+      primary: blue-grey
+      accent: deep-orange
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch-outline
+        name: Switch to light mode
+      primary: blue-grey
+      accent: deep-orange
+
+extra:
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/ControlAI
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/WilliamBakst
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/wbakst/
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - admonition
+  - pymdownx.arithmatex:
+      generic: true
+  - footnotes
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.mark
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+copyright: Copyright &copy; 2023 SOTAI Labs Inc.
