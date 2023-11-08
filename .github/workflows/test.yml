@@ -3,8 +3,11 @@ run-name: ${{ github.actor }} is testing the package
 
 on:
   push:
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   release:
