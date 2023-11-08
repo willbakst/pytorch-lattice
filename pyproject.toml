@@ -14,7 +14,7 @@ matplotlib = "^3.7.1"
 numpy = "^1.23.5"
 pandas = "^1.5.3"
 pydantic = "^2.0.2"
-torch = "^2.0.0"
+torch = ">=2.0.0, !=2.0.1, !=2.1.0"
 tqdm = "^4.65.0"
 
 [tool.poetry.group.dev.dependencies]
