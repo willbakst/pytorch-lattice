@@ -5,3 +5,4 @@ architectures. To construct a PyTorch Calibrated Model, pass a calibrated modeli
 config to the corresponding calibrated model.
 """
 from .calibrated_linear import CalibratedLinear
+from .features import CategoricalFeature, NumericalFeature

@@ -15,7 +15,7 @@ from typing import List, Optional, Tuple, Union
 
 import numpy as np
 
-from .enums import FeatureType, InputKeypointsInit, Monotonicity
+from ..enums import FeatureType, InputKeypointsInit, Monotonicity
 
 
 # pylint: disable-next=too-few-public-methods

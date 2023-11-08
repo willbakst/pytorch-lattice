@@ -1,4 +1,4 @@
-"""Enum Classes for SOTAI SDK."""
+"""Enum Classes for PyTorch Lattice."""
 from enum import Enum, EnumMeta
 from typing import Any
 
