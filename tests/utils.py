@@ -12,7 +12,7 @@ def _batch_data(examples: torch.Tensor, labels: torch.Tensor, batch_size: int):
         )
 
 
-def train_calibrated_module(  # pylint: disable=too-many-arguments
+def train_calibrated_module(
     calibrated_module: torch.nn.Module,  # note: must have constrain(...) function
     examples: torch.Tensor,
     labels: torch.Tensor,

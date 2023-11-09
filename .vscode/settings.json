@@ -10,6 +10,7 @@
     "editor.tabSize": 4,
     "editor.codeActionsOnSave": {
       "source.organizeImports": true
-    }
+    },
+    "editor.defaultFormatter": "charliermarsh.ruff"
   }
 }

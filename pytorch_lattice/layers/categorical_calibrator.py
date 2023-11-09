@@ -13,7 +13,6 @@ from graphlib import CycleError, TopologicalSorter
 from ..enums import CategoricalCalibratorInit
 
 
-# pylint: disable-next=too-many-instance-attributes
 class CategoricalCalibrator(torch.nn.Module):
     """A categorical calibrator.
 
@@ -40,8 +39,7 @@ class CategoricalCalibrator(torch.nn.Module):
     ```
     """
 
-    # pylint: disable-next=too-many-branches
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
         self,
         num_categories: int,
         missing_input_value: Optional[float] = None,
@@ -118,7 +116,7 @@ class CategoricalCalibrator(torch.nn.Module):
         else:
             raise ValueError(f"Unknown kernel init: {kernel_init}")
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:  # pylint: disable=invalid-name
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Calibrates categorical inputs through a learned mapping.
 
         Args:

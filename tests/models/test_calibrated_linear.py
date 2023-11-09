@@ -255,7 +255,7 @@ def test_constrain(mock_linear_constrain, mock_output_calibrator_constrain):
         mock_constrain.assert_called_once()
 
 
-def test_training():  # pylint: disable=too-many-locals
+def test_training():
     """Tests `CalibratedLinear` training on data from f(x) = 0.7|x_1| + 0.3x_2."""
     num_examples, num_categories = 3000, 3
     output_min, output_max = 0.0, num_categories - 1

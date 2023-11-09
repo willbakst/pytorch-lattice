@@ -2,6 +2,7 @@
 import numpy as np
 import pytest
 import torch
+
 from pytorch_lattice import Monotonicity, NumericalCalibratorInit
 from pytorch_lattice.layers import NumericalCalibrator
 
@@ -323,13 +324,11 @@ def test_constrain_bounds(output_min, output_max, kernel_data):
     calibrator = NumericalCalibrator(
         np.linspace(1.0, 5.0, num=6), output_min=output_min, output_max=output_max
     )
-    # pylint: disable=R0801
     calibrator.kernel.data = kernel_data
     calibrator.constrain()
     keypoints_outputs = calibrator.keypoints_outputs()
     assert torch.all(keypoints_outputs >= output_min)
     assert torch.all(keypoints_outputs <= output_max)
-    # pylint: enable=R0801
 
 
 @pytest.mark.parametrize(
@@ -481,13 +480,11 @@ def test_constrain_bounds_with_monotonicity(
         output_max=output_max,
         monotonicity=monotonicity,
     )
-    # pylint: disable=R0801
     calibrator.kernel.data = kernel_data
     calibrator.constrain()
     keypoints_outputs = calibrator.keypoints_outputs()
     assert torch.all(keypoints_outputs >= output_min)
     assert torch.all(keypoints_outputs <= output_max)
-    # pylint: enable=R0801
     heights = calibrator.kernel.data[1:]
     if monotonicity == Monotonicity.INCREASING:
         assert torch.all(heights >= 0)
@@ -645,12 +642,10 @@ def test_project_monotonic_bounds(
         monotonicity=monotonicity,
     )
     bias, heights = kernel_data[0:1], kernel_data[1:]
-    # pylint: disable=protected-access
     (
         projected_bias,
         projected_heights,
     ) = calibrator._project_monotonic_bounds(bias, heights)
-    # pylint: enable=protected-access
     projected_kernel_data = torch.cat((projected_bias, projected_heights), 0)
     assert torch.allclose(projected_kernel_data, expected_projected_kernel_data)
 
@@ -710,12 +705,10 @@ def test_approximately_project_bounds_only(
         monotonicity=Monotonicity.NONE,
     )
     bias, heights = kernel_data[0:1], kernel_data[1:]
-    # pylint: disable=protected-access
     (
         projected_bias,
         projected_heights,
     ) = calibrator._approximately_project_bounds_only(bias, heights)
-    # pylint: enable=protected-access
     projected_kernel_data = torch.cat((projected_bias, projected_heights), 0)
     assert torch.allclose(projected_kernel_data, expected_projected_kernel_data)
 
@@ -744,9 +737,7 @@ def test_project_monotonicity(
     calibrator = NumericalCalibrator(
         np.linspace(1.0, 4.0, num=4), monotonicity=monotonicity
     )
-    # pylint: disable=protected-access
     projected_heights = calibrator._project_monotonicity(heights)
-    # pylint: enable=protected-access
     assert torch.allclose(projected_heights, expected_projected_heights)
 
 
@@ -809,14 +800,12 @@ def test_squeeze_by_scaling(
         monotonicity=monotonicity,
     )
     bias, heights = kernel_data[0:1], kernel_data[1:]
-    # pylint: disable=protected-access
     projected_bias, projected_heights = calibrator._squeeze_by_scaling(bias, heights)
-    # pylint: enable=protected-access
     projected_kernel_data = torch.cat((projected_bias, projected_heights), 0)
     assert torch.allclose(projected_kernel_data, expected_projected_kernel_data)
 
 
-def test_training():  # pylint: disable=too-many-locals
+def test_training():
     """Tests that the `NumericalCalibrator` module can learn f(x) = |x|."""
     num_examples = 1000
     output_min, output_max = 0.0, 2.0
@@ -832,7 +821,6 @@ def test_training():  # pylint: disable=too-many-locals
         monotonicity=Monotonicity.NONE,
     )
 
-    # pylint: disable=R0801
     loss_fn = torch.nn.MSELoss()
     optimizer = torch.optim.Adam(calibrator.parameters(), lr=1e-2)
 
@@ -851,4 +839,3 @@ def test_training():  # pylint: disable=too-many-locals
     assert torch.allclose(
         torch.absolute(keypoints_inputs), keypoints_outputs, atol=2e-2
     )
-    # pylint: enable=R0801

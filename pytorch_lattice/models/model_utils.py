@@ -133,7 +133,7 @@ def initialize_output_calibrator(
 
 def calibrate_and_stack(
     x: torch.Tensor,
-    calibrators: torch.nn.ModuleDict,  # pylint: disable=invalid-name
+    calibrators: torch.nn.ModuleDict,
 ) -> torch.Tensor:
     """Helper function to run calibrators along columns of given data.
 

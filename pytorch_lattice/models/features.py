@@ -18,7 +18,6 @@ import numpy as np
 from ..enums import FeatureType, InputKeypointsInit, Monotonicity
 
 
-# pylint: disable-next=too-few-public-methods
 class _Feature:
     """Base configuration for numerical and categorical features.
 
@@ -32,8 +31,6 @@ class _Feature:
         self.feature_type = feature_type
 
 
-# pylint: disable-next=too-few-public-methods
-# pylint: disable-next=too-many-instance-attributes
 class NumericalFeature(_Feature):
     """Feature configuration for numerical features.
 
@@ -45,7 +42,7 @@ class NumericalFeature(_Feature):
             `input_keypoints_init` scheme.
     """
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
         self,
         feature_name: str,
         data: np.ndarray,
@@ -118,7 +115,6 @@ class NumericalFeature(_Feature):
             raise ValueError(f"Unknown input keypoints init: {input_keypoints_init}")
 
 
-# pylint: disable-next=too-few-public-methods
 class CategoricalFeature(_Feature):
     """Feature configuration for categorical features.
 

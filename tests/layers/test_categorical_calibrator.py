@@ -2,6 +2,7 @@
 import numpy as np
 import pytest
 import torch
+
 from pytorch_lattice.enums import CategoricalCalibratorInit
 from pytorch_lattice.layers import CategoricalCalibrator
 
@@ -238,13 +239,11 @@ def test_constrain_bounds(output_min, output_max, kernel_data):
     calibrator = CategoricalCalibrator(
         kernel_data.size()[0], output_min=output_min, output_max=output_max
     )
-    # pylint: disable=R0801
     calibrator.kernel.data = kernel_data
     calibrator.constrain()
     keypoints_outputs = calibrator.keypoints_outputs()
     assert torch.all(keypoints_outputs >= output_min)
     assert torch.all(keypoints_outputs <= output_max)
-    # pylint: enable=R0801
 
 
 @pytest.mark.parametrize(
@@ -348,7 +347,6 @@ def test_constrain_bounds_with_monotonicity_pairs(
         output_max=output_max,
         monotonicity_pairs=monotonicity_pairs,
     )
-    # pylint: disable=R0801
     calibrator.kernel.data = kernel_data
     calibrator.constrain()
     keypoints_outputs = calibrator.keypoints_outputs()
@@ -356,7 +354,6 @@ def test_constrain_bounds_with_monotonicity_pairs(
     assert torch.all(keypoints_outputs <= output_max)
     for i, j in monotonicity_pairs:
         assert keypoints_outputs[i] <= keypoints_outputs[j]
-    # pylint: enable=R0801
 
 
 @pytest.mark.parametrize(
@@ -421,15 +418,13 @@ def test_approximately_project_monotonicity_pairs(
     calibrator = CategoricalCalibrator(
         kernel_data.size()[0], monotonicity_pairs=monotonicity_pairs
     )
-    # pylint: disable=protected-access
     projected_kernel_data = calibrator._approximately_project_monotonicity_pairs(
         kernel_data
     )
-    # pylint: enable=protected-access
     assert torch.allclose(projected_kernel_data, expected_projected_kernel_data)
 
 
-def test_training():  # pylint: disable=too-many-locals
+def test_training():
     """Tests that the `CategoricalCalibrator` module can learn a mapping."""
     num_categories, num_examples_per_category = 5, 200
     training_examples = np.concatenate(
@@ -448,7 +443,6 @@ def test_training():  # pylint: disable=too-many-locals
         monotonicity_pairs=[(i, i + 1) for i in range(num_categories - 1)],
     )
 
-    # pylint: disable=R0801
     loss_fn = torch.nn.MSELoss()
     optimizer = torch.optim.Adam(calibrator.parameters(), lr=1e-2)
 
@@ -465,4 +459,3 @@ def test_training():  # pylint: disable=too-many-locals
     keypoints_inputs = calibrator.keypoints_inputs()
     keypoints_outputs = calibrator.keypoints_outputs()
     assert torch.allclose(keypoints_inputs.double(), keypoints_outputs, atol=2e-2)
-    # pylint: enable=R0801

@@ -13,7 +13,6 @@ import torch
 from ..enums import Monotonicity, NumericalCalibratorInit
 
 
-# pylint: disable-next=too-many-instance-attributes
 class NumericalCalibrator(torch.nn.Module):
     """A numerical calibrator.
 
@@ -41,7 +40,7 @@ class NumericalCalibrator(torch.nn.Module):
     ```
     """
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
         self,
         input_keypoints: np.ndarray,
         missing_input_value: Optional[float] = None,
@@ -128,7 +127,7 @@ class NumericalCalibrator(torch.nn.Module):
                 (self._output_init_min + self._output_init_max) / 2.0,
             )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:  # pylint: disable=invalid-name
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Calibrates numerical inputs through piece-wise linear interpolation.
 
         Args:

@@ -14,7 +14,6 @@ from .model_utils import (
 )
 
 
-# pylint: disable-next=too-many-instance-attributes
 class CalibratedLinear(torch.nn.Module):
     """PyTorch Calibrated Linear Model.
 
@@ -52,7 +51,7 @@ class CalibratedLinear(torch.nn.Module):
     ```
     """
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
         self,
         features: List[Union[NumericalFeature, CategoricalFeature]],
         output_min: Optional[float] = None,
@@ -107,7 +106,7 @@ class CalibratedLinear(torch.nn.Module):
             output_max=output_max,
         )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:  # pylint: disable=invalid-name
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Runs an input through the network to produce a calibrated linear output.
 
         Args:

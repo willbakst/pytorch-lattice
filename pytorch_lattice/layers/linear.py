@@ -83,7 +83,7 @@ class Linear(torch.nn.Module):
             self.bias = torch.nn.Parameter(torch.Tensor(1).double())
             torch.nn.init.constant_(self.bias, 0.0)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:  # pylint: disable=invalid-name
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Transforms inputs using a linear combination.
 
         Args:
