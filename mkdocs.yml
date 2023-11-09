@@ -63,10 +63,8 @@ markdown_extensions:
 
 nav:
   - Get Started:
-      - Welcome to PyTorch Lattice: "index.md"
+      - Welcome to PyTorch Lattice: "README.md"
       - Why use PyTorch Lattice: "why.md"
-      - Installation: "installation.md"
-      - Quickstart: "quickstart.md"
       - Contributing: "contributing.md"
       - How to help us!: "help.md"
       - Changelog: "changelog.md"
