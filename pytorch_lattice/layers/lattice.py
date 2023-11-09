@@ -4,7 +4,7 @@ PyTorch implementation of a lattice layer.
 This layer takes one or more d-dimensional inputs and outputs the interpolated value
 according the specified interpolation method.
 """
-from typing import Iterator, Tuple, Union, List, Callable, Optional
+from typing import Callable, Iterator, Optional, Union, overload
 
 import numpy as np
 import torch
@@ -12,7 +12,6 @@ import torch
 from ..enums import Interpolation, LatticeInit, Monotonicity
 
 
-# pylint: disable=too-many-instance-attributes
 class Lattice(torch.nn.Module):
     """A Lattice Module.
 
@@ -41,11 +40,11 @@ class Lattice(torch.nn.Module):
 
     def __init__(
         self,
-        lattice_sizes: Union[List[int], Tuple[int]],
+        lattice_sizes: Union[list[int], tuple[int]],
         output_min: Optional[float] = None,
         output_max: Optional[float] = None,
         kernel_init: LatticeInit = LatticeInit.LINEAR,
-        monotonicities: Optional[List[Monotonicity]] = None,
+        monotonicities: Optional[list[Monotonicity]] = None,
         clip_inputs: bool = True,
         interpolation: Interpolation = Interpolation.HYPERCUBE,
         units: int = 1,
@@ -86,11 +85,11 @@ class Lattice(torch.nn.Module):
             self.monotonicities = monotonicities
 
         if output_min is not None and output_max is not None:
-            output_init_min, output_init_max = self.output_min, self.output_max
+            output_init_min, output_init_max = output_min, output_max
         elif output_min is not None:
-            output_init_min, output_init_max = self.output_min, self.output_min + 4.0
+            output_init_min, output_init_max = output_min, output_min + 4.0
         elif output_max is not None:
-            output_init_min, output_init_max = self.output_max - 4.0, self.output_max
+            output_init_min, output_init_max = output_max - 4.0, output_max
         else:
             output_init_min, output_init_max = -2.0, 2.0
         self._output_init_min, self._output_init_max = output_init_min, output_init_max
@@ -107,8 +106,7 @@ class Lattice(torch.nn.Module):
 
         self.kernel = torch.nn.Parameter(initialize_kernel())
 
-    # pylint: disable-next=invalid-name
-    def forward(self, x: Union[torch.Tensor, List[torch.Tensor]]) -> torch.Tensor:
+    def forward(self, x: Union[torch.Tensor, list[torch.Tensor]]) -> torch.Tensor:
         """Calculates interpolation from input, using method of self.interpolation.
 
         Args:
@@ -125,14 +123,15 @@ class Lattice(torch.nn.Module):
         Raises:
             ValueError: If the type of interpolation is unknown.
         """
+        x = [xi.double() for xi in x] if isinstance(x, list) else x.double()
         if self.interpolation == Interpolation.HYPERCUBE:
-            return self._compute_hypercube_interpolation(x.double())
+            return self._compute_hypercube_interpolation(x)
         if self.interpolation == Interpolation.SIMPLEX:
-            return self._compute_simplex_interpolation(x.double())
+            return self._compute_simplex_interpolation(x)
         raise ValueError(f"Unknown interpolation type: {self.interpolation}")
 
     @torch.no_grad()
-    def assert_constraints(self, eps=1e-6) -> List[str]:
+    def assert_constraints(self, eps=1e-6) -> list[str]:
         """Asserts that layer satisfies specified constraints.
 
         This checks that weights follow monotonicity and bounds constraints.
@@ -229,7 +228,7 @@ class Lattice(torch.nn.Module):
         num_constraint_dims = self._count_non_zeros(monotonicities, unimodalities)
 
         if num_constraint_dims == 0:
-            monotonicities = [1] * len(self.lattice_sizes)
+            monotonicities = [Monotonicity.INCREASING] * len(self.lattice_sizes)
             num_constraint_dims = len(self.lattice_sizes)
 
         dim_range = (
@@ -240,7 +239,7 @@ class Lattice(torch.nn.Module):
         for monotonicity, unimodality, dim_size in zip(
             monotonicities, unimodalities, self.lattice_sizes
         ):
-            if monotonicity != 0:
+            if monotonicity != Monotonicity.NONE:
                 one_d = np.linspace(start=0.0, stop=dim_range, num=dim_size)
             elif unimodality != 0:
                 decreasing = np.linspace(
@@ -286,8 +285,9 @@ class Lattice(torch.nn.Module):
                         result += 1
         return result
 
-    # pylint: disable=too-many-locals
-    def _compute_simplex_interpolation(self, inputs: torch.Tensor) -> torch.Tensor:
+    def _compute_simplex_interpolation(
+        self, inputs: Union[torch.Tensor, list[torch.Tensor]]
+    ) -> torch.Tensor:
         """Evaluates a lattice using simplex interpolation.
 
         Each `d`-dimensional unit hypercube of the lattice can be partitioned into `d!`
@@ -341,14 +341,10 @@ class Lattice(torch.nn.Module):
         strides = torch.tensor(
             np.cumprod([1] + self.lattice_sizes[::-1][:-1])[::-1].copy()
         )
-        lower_corner_offset = None
         if not all_size_2:
             lower_corner_coordinates = inputs.int()
             lower_corner_coordinates = torch.min(
                 lower_corner_coordinates, torch.tensor(self.lattice_sizes) - 2
-            )
-            lower_corner_offset = (lower_corner_coordinates * strides).sum(
-                dim=-1, keepdim=True
             )
             inputs = inputs - lower_corner_coordinates.float()
 
@@ -375,6 +371,9 @@ class Lattice(torch.nn.Module):
                 sorted_strides, [1, 0] + flat_no_padding
             )
         else:
+            lower_corner_offset = (lower_corner_coordinates * strides).sum(
+                dim=-1, keepdim=True
+            )
             corner_offset_and_sorted_strides = torch.cat(
                 [lower_corner_offset, sorted_strides], dim=-1
             )
@@ -396,11 +395,9 @@ class Lattice(torch.nn.Module):
 
         return (gathered_params * weights).sum(dim=-1, keepdim=self.units == 1)
 
-    # pylint: enable=too-many-locals
-
     def _compute_hypercube_interpolation(
         self,
-        inputs: Union[torch.Tensor, List[torch.Tensor]],
+        inputs: Union[torch.Tensor, list[torch.Tensor]],
     ) -> torch.Tensor:
         """Performs hypercube interpolation using the surrounding unit hypercube.
 
@@ -424,7 +421,7 @@ class Lattice(torch.nn.Module):
         return torch.sum(interpolation_weights * self.kernel.t(), dim=-1)
 
     def _compute_hypercube_interpolation_weights(
-        self, inputs: Union[torch.Tensor, List[torch.Tensor]], clip_inputs: bool = True
+        self, inputs: Union[torch.Tensor, list[torch.Tensor]], clip_inputs: bool = True
     ) -> torch.Tensor:
         """Computes weights for hypercube lattice interpolation.
 
@@ -457,11 +454,9 @@ class Lattice(torch.nn.Module):
         if all(size == 2 for size in self.lattice_sizes) and not isinstance(
             inputs, list
         ):
-            # pylint: disable=invalid-name
             w = torch.stack([(1.0 - inputs), inputs], dim=-1)
             if clip_inputs:
                 w = torch.clamp(w, min=0, max=1)
-            # pylint: enable=invalid-name
             one_d_interpolation_weights = list(torch.unbind(w, dim=-2))
             return self._batch_outer_operation(one_d_interpolation_weights)
 
@@ -493,14 +488,17 @@ class Lattice(torch.nn.Module):
 
     @staticmethod
     def _batch_outer_operation(
-        list_of_tensors: List[torch.Tensor],
-        operation: Union[str, Callable] = "auto",
+        list_of_tensors: list[torch.Tensor],
+        operation: Optional[Callable] = None,
     ) -> torch.Tensor:
         """Computes the flattened outer product of a list of tensors.
 
         Args:
             list_of_tensors: List of tensors of same shape `(batch_size, ..., k[i])`
               where everything except `k_i` matches.
+            operation: A torch operation which supports broadcasting to be applied. If
+                `None` is provided, this will apply `torch.mul` for the first several
+                tensors and `torch.matmul` for the remaining tensors.
 
         Returns:
             `torch.Tensor` of shape `(batch_size, ..., k_i * k_j * ...)` containing a
@@ -512,12 +510,10 @@ class Lattice(torch.nn.Module):
         result = torch.unsqueeze(list_of_tensors[0], dim=-1)
 
         for i, tensor in enumerate(list_of_tensors[1:]):
-            # pylint: disable=invalid-name
-            if operation == "auto":
+            if not operation:
                 op = torch.mul if i < 6 else torch.matmul
             else:
                 op = operation
-            # pylint: enable=invalid-name
 
             result = op(result, torch.unsqueeze(tensor, dim=-2))
             shape = [-1] + [int(size) for size in result.shape[1:]]
@@ -528,10 +524,20 @@ class Lattice(torch.nn.Module):
 
         return result
 
+    @overload
+    def _clip_onto_lattice_range(self, inputs: torch.Tensor) -> torch.Tensor:
+        ...
+
+    @overload
+    def _clip_onto_lattice_range(
+        self, inputs: list[torch.Tensor]
+    ) -> list[torch.Tensor]:
+        ...
+
     def _clip_onto_lattice_range(
         self,
-        inputs: Union[torch.Tensor, List[torch.Tensor]],
-    ) -> torch.Tensor:
+        inputs: Union[torch.Tensor, list[torch.Tensor]],
+    ) -> Union[torch.Tensor, list[torch.Tensor]]:
         """Clips inputs onto valid input range for given lattice_sizes.
 
         Args:
@@ -541,6 +547,7 @@ class Lattice(torch.nn.Module):
             `torch.Tensor` of shape `inputs` with values within range
             `[0, dim_size - 1]`.
         """
+        clipped_inputs: Union[torch.Tensor, list[torch.Tensor]]
         if not isinstance(inputs, list):
             upper_bounds = torch.tensor(
                 [dim_size - 1.0 for dim_size in self.lattice_sizes]
@@ -556,20 +563,19 @@ class Lattice(torch.nn.Module):
                 )
             dim_lower_bound = torch.zeros(1, dtype=inputs[0].dtype)
 
-            clipped_inputs = []
-            for one_d_input, dim_size in zip(inputs, self.lattice_sizes):
-                clipped_inputs.append(
-                    torch.clamp(
-                        one_d_input, min=dim_lower_bound, max=dim_upper_bounds[dim_size]
-                    )
+            clipped_inputs = [
+                torch.clamp(
+                    one_d_input, min=dim_lower_bound, max=dim_upper_bounds[dim_size]
                 )
+                for one_d_input, dim_size in zip(inputs, self.lattice_sizes)
+            ]
 
         return clipped_inputs
 
     def _bucketize_consecutive_equal_dims(
         self,
-        inputs: Union[torch.Tensor, List[torch.Tensor]],
-    ) -> Iterator[Tuple[torch.Tensor, int, int]]:
+        inputs: Union[torch.Tensor, list[torch.Tensor]],
+    ) -> Iterator[tuple[torch.Tensor, int, int]]:
         """Creates buckets of equal sized dimensions for broadcasting ops.
 
         Args:
@@ -604,8 +610,8 @@ class Lattice(torch.nn.Module):
     def _approximately_project_monotonicity(
         self,
         weights: torch.Tensor,
-        lattice_sizes: List[int],
-        monotonicities: List[Monotonicity],
+        lattice_sizes: list[int],
+        monotonicities: list[Monotonicity],
     ) -> torch.Tensor:
         """Projects weights of lattice to meet monotonicity constraints.
 

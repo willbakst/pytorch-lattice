@@ -1,13 +1,14 @@
 """Tests for calibrated lattice model."""
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
+
 import numpy as np
 import pytest
 import torch
 
-from pytorch_lattice import Monotonicity, Interpolation, LatticeInit
-from pytorch_lattice.models.features import CategoricalFeature, NumericalFeature
-from pytorch_lattice.models import CalibratedLattice
+from pytorch_lattice import Interpolation, LatticeInit, Monotonicity
 from pytorch_lattice.layers import Lattice, NumericalCalibrator
+from pytorch_lattice.models import CalibratedLattice
+from pytorch_lattice.models.features import CategoricalFeature, NumericalFeature
 
 from ..utils import train_calibrated_module
 
@@ -194,7 +195,7 @@ def test_forward():
         4,
     ],
 )
-def test_training(interpolation, lattice_dim):  # pylint: disable=too-many-locals
+def test_training(interpolation, lattice_dim):
     """Tests `CalibratedLattice` training on data from f(x) = 0.7|x_1| + 0.3x_2."""
     num_examples, num_categories = 3000, 3
     output_min, output_max = 0.0, num_categories - 1

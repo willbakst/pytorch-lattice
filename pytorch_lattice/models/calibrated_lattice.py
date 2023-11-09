@@ -4,21 +4,20 @@ from typing import Dict, List, Optional, Union
 import torch
 
 from ..enums import (
-    Monotonicity,
-    LatticeInit,
     Interpolation,
+    LatticeInit,
+    Monotonicity,
 )
-from .features import CategoricalFeature, NumericalFeature
 from ..layers import Lattice
+from .features import CategoricalFeature, NumericalFeature
 from .model_utils import (
-    initialize_feature_calibrators,
-    initialize_output_calibrator,
-    initialize_monotonicities,
     calibrate_and_stack,
+    initialize_feature_calibrators,
+    initialize_monotonicities,
+    initialize_output_calibrator,
 )
 
 
-# pylint: disable-next=too-many-instance-attributes
 class CalibratedLattice(torch.nn.Module):
     """PyTorch Calibrated Lattice Model.
 
@@ -56,7 +55,7 @@ class CalibratedLattice(torch.nn.Module):
     ```
     """
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
         self,
         features: List[Union[NumericalFeature, CategoricalFeature]],
         clip_inputs: bool = True,
@@ -118,7 +117,7 @@ class CalibratedLattice(torch.nn.Module):
             output_max=output_max,
         )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:  # pylint: disable=invalid-name
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Runs an input through the network to produce a calibrated lattice output.
 
         Args:

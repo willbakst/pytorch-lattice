@@ -3,8 +3,8 @@ import numpy as np
 import pytest
 import torch
 
-from pytorch_lattice.layers import Lattice
 from pytorch_lattice.enums import Interpolation, Monotonicity
+from pytorch_lattice.layers import Lattice
 
 
 @pytest.mark.parametrize(
@@ -288,11 +288,9 @@ def test_batch_outer_operation(
     expected_out,
 ):
     """Tests _batch_outer_operation works correctly"""
-    # pylint: disable=protected-access
     assert torch.allclose(
         Lattice._batch_outer_operation(inputs), expected_out, atol=1e-4
     )
-    # pylint: enable=protected-access
 
 
 @pytest.mark.parametrize(
@@ -332,11 +330,9 @@ def test_bucketize_consecutive_inputs(
 ):
     """Tests _bucketize_consecutive_inputs works correctly"""
     lattice = Lattice(lattice_sizes)
-    # pylint: disable=protected-access
     actual_out = list(
         lattice._bucketize_consecutive_equal_dims(torch.tensor([[0.1, 0.2, 0.3, 0.4]]))
     )
-    # pylint: enable=protected-access
     for (expected_tensor, expected_int1, expected_int2), (
         actual_tensor,
         actual_int1,

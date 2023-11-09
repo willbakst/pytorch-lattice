@@ -1,22 +1,21 @@
 """Tests for util functions for calibrated models."""
 from unittest.mock import Mock
 
-import torch
 import numpy as np
 import pytest
+import torch
 
 from pytorch_lattice import (
+    CategoricalCalibratorInit,
     Monotonicity,
     NumericalCalibratorInit,
-    CategoricalCalibratorInit,
-    FeatureType,
 )
-from pytorch_lattice.models.features import NumericalFeature, CategoricalFeature
+from pytorch_lattice.models.features import CategoricalFeature, NumericalFeature
 from pytorch_lattice.models.model_utils import (
+    calibrate_and_stack,
     initialize_feature_calibrators,
     initialize_monotonicities,
     initialize_output_calibrator,
-    calibrate_and_stack,
 )
 
 
@@ -113,9 +112,8 @@ def test_initialize_feature_calibrators(
 def test_initialize_feature_calibrators_invalid() -> None:
     """Test for calibrator initialization helper function for invalid feature type."""
     with pytest.raises(ValueError, match=r"Unknown feature type unknown for feature a"):
-        features = [NumericalFeature(feature_name="a", data=np.array([1.0]))]
-        features[0].feature_type = FeatureType.UNKNOWN
-        initialize_feature_calibrators(features)
+        features = ["NOT A FEATURE"]
+        initialize_feature_calibrators(features)  # type: ignore[arg-type]
 
 
 @pytest.mark.parametrize(
@@ -225,6 +223,7 @@ def test_initialize_output_calibrator(
         output_min=output_min,
         output_max=output_max,
     )
+    assert output_cal is not None
     assert len(output_cal.input_keypoints) == output_calibration_num_keypoints
     assert output_cal.missing_input_value is None
     assert output_cal.output_max == output_max
