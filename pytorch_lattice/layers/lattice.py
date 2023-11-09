@@ -202,16 +202,11 @@ class Lattice(torch.nn.Module):
     ############################## PRIVATE METHODS #################################
     ################################################################################
 
-    def _linear_initializer(
-        self,
-        unimodalities=None,
-    ) -> torch.Tensor:
+    def _linear_initializer(self) -> torch.Tensor:
         """Creates initial weights tensor for linear initialization.
 
         Args:
             monotonicities: monotonicity constraints of lattice, enforced in
-              initialization.
-            unimodalities: unimodality constraints of lattice, enforced in
               initialization.
 
         Returns:
@@ -219,14 +214,13 @@ class Lattice(torch.nn.Module):
         """
         monotonicities = self.monotonicities[:]
 
-        # TODO: convert counting logic of unimodalities to suit enums.
         if monotonicities is None:
             monotonicities = [Monotonicity.NONE] * len(self.lattice_sizes)
-        if unimodalities is None:
-            unimodalities = [0] * len(self.lattice_sizes)
 
-        num_constraint_dims = self._count_non_zeros(monotonicities, unimodalities)
+        print(f"MONOTONICITIES: {monotonicities}")
+        num_constraint_dims = self._count_non_zeros(monotonicities)
 
+        print(f"NUM CONSTRAINTS DIM: {num_constraint_dims}")
         if num_constraint_dims == 0:
             monotonicities = [Monotonicity.INCREASING] * len(self.lattice_sizes)
             num_constraint_dims = len(self.lattice_sizes)
@@ -236,22 +230,9 @@ class Lattice(torch.nn.Module):
         )
         one_d_weights = []
 
-        for monotonicity, unimodality, dim_size in zip(
-            monotonicities, unimodalities, self.lattice_sizes
-        ):
+        for monotonicity, dim_size in zip(monotonicities, self.lattice_sizes):
             if monotonicity != Monotonicity.NONE:
                 one_d = np.linspace(start=0.0, stop=dim_range, num=dim_size)
-            elif unimodality != 0:
-                decreasing = np.linspace(
-                    start=dim_range, stop=0.0, num=(dim_size + 1) // 2
-                )
-                increasing = np.linspace(
-                    start=0.0, stop=dim_range, num=(dim_size + 1) // 2
-                )
-                if unimodality == 1:
-                    one_d = np.concatenate((decreasing, increasing[dim_size % 2 :]))
-                else:
-                    one_d = np.concatenate((increasing, decreasing[dim_size % 2 :]))
             else:
                 one_d = np.array([0.0] * dim_size)
 
@@ -269,19 +250,14 @@ class Lattice(torch.nn.Module):
         """Returns total number of non 0/None enum elements in given iterables.
 
         Args:
-            *iterables: Any number of the value `None` or iterables of numeric values
-                        or `Monotonicity` enum values.
+            *iterables: Any number of the value `None` or iterables of `Monotonicity`
+                enum values.
         """
         result = 0
         for iterable in iterables:
             if iterable is not None:
                 for element in iterable:
-                    if (
-                        isinstance(element, Monotonicity)
-                        and element != Monotonicity.NONE
-                    ):
-                        result += 1
-                    elif not isinstance(element, Monotonicity) and element != 0:
+                    if element != "none":
                         result += 1
         return result
 

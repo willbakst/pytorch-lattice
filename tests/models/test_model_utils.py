@@ -111,7 +111,10 @@ def test_initialize_feature_calibrators(
 
 def test_initialize_feature_calibrators_invalid() -> None:
     """Test for calibrator initialization helper function for invalid feature type."""
-    with pytest.raises(ValueError, match=r"Unknown feature type unknown for feature a"):
+    with pytest.raises(
+        ValueError,
+        match=r"Unknown type <class 'str'> for feature NOT A FEATURE",
+    ):
         features = ["NOT A FEATURE"]
         initialize_feature_calibrators(features)  # type: ignore[arg-type]
 

@@ -59,9 +59,7 @@ def initialize_feature_calibrators(
                 kernel_init=CategoricalCalibratorInit.UNIFORM,
             )
         else:
-            raise ValueError(
-                f"Unknown type {type(feature)} for feature {feature.feature_name}"
-            )
+            raise ValueError(f"Unknown type {type(feature)} for feature {feature}")
     return calibrators
 
 
