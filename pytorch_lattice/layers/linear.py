@@ -4,7 +4,7 @@ PyTorch implementation of the calibrated linear module. This module takes in a
 single-dimensional input and transforms it using a linear transformation and optionally
 a bias term. This module supports monotonicity constraints.
 """
-from typing import List, Optional
+from typing import Optional
 
 import torch
 
@@ -44,7 +44,7 @@ class Linear(torch.nn.Module):
     def __init__(
         self,
         input_dim,
-        monotonicities: Optional[List[Monotonicity]] = None,
+        monotonicities: Optional[list[Monotonicity]] = None,
         use_bias: bool = True,
         weighted_average: bool = False,
     ) -> None:
@@ -98,7 +98,7 @@ class Linear(torch.nn.Module):
         return result
 
     @torch.no_grad()
-    def assert_constraints(self, eps=1e-6) -> List[str]:
+    def assert_constraints(self, eps=1e-6) -> list[str]:
         """Asserts that layer satisfies specified constraints.
 
         This checks that decreasing monotonicity corresponds to negative weights,

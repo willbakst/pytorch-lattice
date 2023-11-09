@@ -2,6 +2,7 @@
 import numpy as np
 import pytest
 import torch
+
 from pytorch_lattice import Monotonicity
 from pytorch_lattice.layers import Linear
 

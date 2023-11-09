@@ -11,32 +11,18 @@ linear_model = CalibratedLinear(linear_config)
 ```
 """
 import logging
-from typing import List, Optional, Tuple, Union
+from typing import Optional, Union
 
 import numpy as np
 
-from ..enums import FeatureType, InputKeypointsInit, Monotonicity
+from ..enums import InputKeypointsInit, Monotonicity
 
 
-class _Feature:
-    """Base configuration for numerical and categorical features.
-
-    Attributes:
-        - All `__init__` arguments.
-    """
-
-    def __init__(self, feature_name: str, feature_type: FeatureType):
-        """Initializes a `_FeatureConfig` instance."""
-        self.feature_name = feature_name
-        self.feature_type = feature_type
-
-
-class NumericalFeature(_Feature):
+class NumericalFeature:
     """Feature configuration for numerical features.
 
     Attributes:
         - All `__init__` arguments.
-        feature_type: The type of this feature. Always `FeatureType.NUMERICAL`.
         input_keypoints: The input keypoints used for this feature's calibrator. These
             keypoints will be initialized using the given `data` under the desired
             `input_keypoints_init` scheme.
@@ -77,7 +63,7 @@ class NumericalFeature(_Feature):
             ValueError: If `data` contains NaN values.
             ValueError: If `input_keypoints_init` is invalid.
         """
-        super().__init__(feature_name, FeatureType.NUMERICAL)
+        self.feature_name = feature_name
 
         if np.isnan(data).any():
             raise ValueError("Data contains NaN values.")
@@ -115,12 +101,11 @@ class NumericalFeature(_Feature):
             raise ValueError(f"Unknown input keypoints init: {input_keypoints_init}")
 
 
-class CategoricalFeature(_Feature):
+class CategoricalFeature:
     """Feature configuration for categorical features.
 
     Attributes:
         - All `__init__` arguments.
-        feature_type: The type of this feature. Always `FeatureType.CATEGORICAL`.
         category_indices: A dictionary mapping string categories to their index.
         monotonicity_index_pairs: A conversion of `monotonicity_pairs` from string
             categories to category indices. Only available if `monotonicity_pairs` are
@@ -130,9 +115,9 @@ class CategoricalFeature(_Feature):
     def __init__(
         self,
         feature_name: str,
-        categories: Union[List[int], List[str]],
+        categories: Union[list[int], list[str]],
         missing_input_value: Optional[float] = None,
-        monotonicity_pairs: Optional[List[Tuple[str, str]]] = None,
+        monotonicity_pairs: Optional[list[tuple[str, str]]] = None,
         lattice_size: int = 2,
     ) -> None:
         """Initializes a `CategoricalFeatureConfig` instance.
@@ -151,8 +136,7 @@ class CategoricalFeature(_Feature):
             lattice_size: The default number of keypoints outputted by the
             calibrator. Only used within `Lattice` models.
         """
-        super().__init__(feature_name, FeatureType.CATEGORICAL)
-
+        self.feature_name = feature_name
         self.categories = categories
         self.missing_input_value = missing_input_value
         self.monotonicity_pairs = monotonicity_pairs

@@ -1,5 +1,5 @@
 """Class for easily constructing a calibrated linear model."""
-from typing import Dict, List, Optional, Union
+from typing import Optional, Union
 
 import torch
 
@@ -53,7 +53,7 @@ class CalibratedLinear(torch.nn.Module):
 
     def __init__(
         self,
-        features: List[Union[NumericalFeature, CategoricalFeature]],
+        features: list[Union[NumericalFeature, CategoricalFeature]],
         output_min: Optional[float] = None,
         output_max: Optional[float] = None,
         use_bias: bool = True,
@@ -92,7 +92,7 @@ class CalibratedLinear(torch.nn.Module):
             input_dim=len(features),
             monotonicities=self.monotonicities,
             use_bias=use_bias,
-            weighted_average=(
+            weighted_average=bool(
                 output_min is not None
                 or output_max is not None
                 or output_calibration_num_keypoints
@@ -123,7 +123,7 @@ class CalibratedLinear(torch.nn.Module):
         return result
 
     @torch.no_grad()
-    def assert_constraints(self) -> Dict[str, List[str]]:
+    def assert_constraints(self) -> dict[str, list[str]]:
         """Asserts all layers within model satisfied specified constraints.
 
         Asserts monotonicity pairs and output bounds for categorical calibrators,

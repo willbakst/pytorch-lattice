@@ -1,4 +1,4 @@
-name: Ruff
+name: Lint
 run-name: ${{ github.actor }} is linting the package
 
 on:
@@ -14,4 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: chartboost/ruff-action@v1
+
+      - name: Run Ruff
+        uses: chartboost/ruff-action@v1
+
+      - name: Install and run mypy
+        run: pip install mypy
+
+      - name: Run mypy
+        run: python -m mypy .

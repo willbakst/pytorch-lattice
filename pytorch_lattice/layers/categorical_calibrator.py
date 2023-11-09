@@ -5,7 +5,7 @@ single-dimensional input of categories represented as indices and transforms it 
 mapping a given category to its learned output value.
 """
 from collections import defaultdict
-from typing import List, Optional, Tuple
+from typing import Optional
 
 import torch
 from graphlib import CycleError, TopologicalSorter
@@ -45,7 +45,7 @@ class CategoricalCalibrator(torch.nn.Module):
         missing_input_value: Optional[float] = None,
         output_min: Optional[float] = None,
         output_max: Optional[float] = None,
-        monotonicity_pairs: Optional[List[Tuple[int, int]]] = None,
+        monotonicity_pairs: Optional[list[tuple[int, int]]] = None,
         kernel_init: CategoricalCalibratorInit = CategoricalCalibratorInit.UNIFORM,
     ) -> None:
         """Initializes an instance of `CategoricalCalibrator`.
@@ -104,14 +104,14 @@ class CategoricalCalibrator(torch.nn.Module):
                 init_value = 0.0
             torch.nn.init.constant_(self.kernel, init_value)
         elif kernel_init == CategoricalCalibratorInit.UNIFORM:
-            if output_min is None and output_max is None:
-                low, high = -0.05, 0.05
-            elif output_min is None:
+            if output_min is not None and output_max is not None:
+                low, high = output_min, output_max
+            elif output_min is None and output_max is not None:
                 low, high = output_max - 0.05, output_max
-            elif output_max is None:
+            elif output_min is not None and output_max is None:
                 low, high = output_min, output_min + 0.05
             else:
-                low, high = output_min, output_max
+                low, high = -0.05, 0.05
             torch.nn.init.uniform_(self.kernel, low, high)
         else:
             raise ValueError(f"Unknown kernel init: {kernel_init}")
@@ -135,7 +135,7 @@ class CategoricalCalibrator(torch.nn.Module):
         return torch.mm(one_hot, self.kernel)
 
     @torch.no_grad()
-    def assert_constraints(self, eps=1e-6) -> List[str]:
+    def assert_constraints(self, eps=1e-6) -> list[str]:
         """Asserts that layer satisfies specified constraints.
 
         This checks that weights at the indexes of monotonicity pairs are in the correct

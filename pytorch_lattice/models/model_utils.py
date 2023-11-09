@@ -1,12 +1,11 @@
 """Common utilities for constructing calibrated models."""
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 import numpy as np
 import torch
 
 from ..enums import (
     CategoricalCalibratorInit,
-    FeatureType,
     Monotonicity,
     NumericalCalibratorInit,
 )
@@ -16,9 +15,9 @@ from .features import CategoricalFeature, NumericalFeature
 
 
 def initialize_feature_calibrators(
-    features: List[Union[NumericalFeature, CategoricalFeature]],
+    features: list[Union[NumericalFeature, CategoricalFeature]],
     output_min: Optional[float] = None,
-    output_max: Union[Optional[float], List[float]] = None,
+    output_max: Union[Optional[float], list[Optional[float]]] = None,
 ) -> torch.nn.ModuleDict:
     """Helper function to initialize calibrators for calibrated model.
 
@@ -40,7 +39,7 @@ def initialize_feature_calibrators(
     if not isinstance(output_max, list):
         output_max = [output_max] * len(features)
     for feature, feature_max in zip(features, output_max):
-        if feature.feature_type == FeatureType.NUMERICAL:
+        if isinstance(feature, NumericalFeature):
             calibrators[feature.feature_name] = NumericalCalibrator(
                 input_keypoints=feature.input_keypoints,
                 missing_input_value=feature.missing_input_value,
@@ -50,7 +49,7 @@ def initialize_feature_calibrators(
                 kernel_init=NumericalCalibratorInit.EQUAL_SLOPES,
                 projection_iterations=feature.projection_iterations,
             )
-        elif feature.feature_type == FeatureType.CATEGORICAL:
+        elif isinstance(feature, CategoricalFeature):
             calibrators[feature.feature_name] = CategoricalCalibrator(
                 num_categories=len(feature.categories),
                 missing_input_value=feature.missing_input_value,
@@ -61,15 +60,14 @@ def initialize_feature_calibrators(
             )
         else:
             raise ValueError(
-                f"Unknown feature type {feature.feature_type} for feature "
-                f"{feature.feature_name}"
+                f"Unknown type {type(feature)} for feature {feature.feature_name}"
             )
     return calibrators
 
 
 def initialize_monotonicities(
-    features: List[Union[NumericalFeature, CategoricalFeature]]
-) -> List[Monotonicity]:
+    features: list[Union[NumericalFeature, CategoricalFeature]]
+) -> list[Monotonicity]:
     """Helper function to initialize monotonicities for calibrated model.
 
     Args:
@@ -81,12 +79,9 @@ def initialize_monotonicities(
     """
     monotonicities = [
         Monotonicity.NONE
-        if (
-            feature.feature_type == FeatureType.CATEGORICAL
-            and not feature.monotonicity_pairs
-        )
+        if (isinstance(feature, CategoricalFeature) and not feature.monotonicity_pairs)
         or (
-            feature.feature_type == FeatureType.NUMERICAL
+            isinstance(feature, NumericalFeature)
             and feature.monotonicity == Monotonicity.NONE
         )
         else Monotonicity.INCREASING

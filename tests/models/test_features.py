@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 
-from pytorch_lattice import FeatureType, InputKeypointsInit, Monotonicity
+from pytorch_lattice import InputKeypointsInit, Monotonicity
 from pytorch_lattice.models import CategoricalFeature, NumericalFeature
 
 
@@ -74,7 +74,6 @@ def test_numerical_feature_config_initialization(
         missing_input_value,
         monotonicity,
     )
-    assert feature.feature_type == FeatureType.NUMERICAL
     assert feature.feature_name == feature_name
     assert (feature.data == data).all()
     assert feature.num_keypoints == num_keypoints
@@ -110,7 +109,6 @@ def test_categorical_feature_config_initialization(
     feature = CategoricalFeature(
         feature_name, categories, missing_input_value, monotonicity_pairs
     )
-    assert feature.feature_type == FeatureType.CATEGORICAL
     assert feature.feature_name == feature_name
     assert feature.categories == categories
     assert feature.missing_input_value == missing_input_value

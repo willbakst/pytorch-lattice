@@ -1,5 +1,10 @@
 """Testing Utilities."""
+from typing import Union
+
 import torch
+
+from pytorch_lattice.layers import Linear
+from pytorch_lattice.models import CalibratedLinear
 
 
 def _batch_data(examples: torch.Tensor, labels: torch.Tensor, batch_size: int):
@@ -13,7 +18,7 @@ def _batch_data(examples: torch.Tensor, labels: torch.Tensor, batch_size: int):
 
 
 def train_calibrated_module(
-    calibrated_module: torch.nn.Module,  # note: must have constrain(...) function
+    calibrated_module: Union[Linear, CalibratedLinear],
     examples: torch.Tensor,
     labels: torch.Tensor,
     loss_fn: torch.nn.Module,

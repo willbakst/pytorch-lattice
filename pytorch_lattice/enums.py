@@ -40,21 +40,6 @@ class InputKeypointsType(_Enum):
     # LEARNED = "learned_interior"
 
 
-class FeatureType(_Enum):
-    """Type of feature.
-
-    - UNKNOWN: a feature with a type that our system does not currently support.
-    - NUMERICAL: a numerical feature that should be calibrated using an instance of
-        `NumericalCalibrator`.
-    - CATEGORICAL: a categorical feature that should be calibrated using an instance of
-        `CategoricalCalibrator`.
-    """
-
-    UNKNOWN = "unknown"
-    NUMERICAL = "numerical"
-    CATEGORICAL = "categorical"
-
-
 class NumericalCalibratorInit(_Enum):
     """Type of kernel initialization to use for NumericalCalibrator.
 

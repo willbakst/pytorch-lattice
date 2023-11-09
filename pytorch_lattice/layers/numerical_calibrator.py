@@ -5,7 +5,7 @@ single-dimensional input and transforms it using piece-wise linear functions tha
 satisfy desired bounds and monotonicity constraints.
 """
 from collections import defaultdict
-from typing import List, Optional, Tuple
+from typing import Optional
 
 import numpy as np
 import torch
@@ -82,11 +82,11 @@ class NumericalCalibrator(torch.nn.Module):
 
         # Determine default output initialization values if bounds are not fully set.
         if output_min is not None and output_max is not None:
-            output_init_min, output_init_max = self.output_min, self.output_max
+            output_init_min, output_init_max = output_min, output_max
         elif output_min is not None:
-            output_init_min, output_init_max = self.output_min, self.output_min + 4.0
+            output_init_min, output_init_max = output_min, output_min + 4.0
         elif output_max is not None:
-            output_init_min, output_init_max = self.output_max - 4.0, self.output_max
+            output_init_min, output_init_max = output_max - 4.0, output_max
         else:
             output_init_min, output_init_max = -2.0, 2.0
         self._output_init_min, self._output_init_max = output_init_min, output_init_max
@@ -111,11 +111,10 @@ class NumericalCalibrator(torch.nn.Module):
                 raise ValueError(f"Unknown kernel init: {self.kernel_init}")
 
             if monotonicity == Monotonicity.DECREASING:
-                bias = self._output_init_max
+                bias = torch.tensor([[self._output_init_max]])
                 heights = -heights
             else:
-                bias = self._output_init_min
-            bias = torch.tensor([[bias]])
+                bias = torch.tensor([[self._output_init_min]])
             return torch.cat((bias, heights), 0).double()
 
         self.kernel = torch.nn.Parameter(initialize_kernel())
@@ -151,7 +150,7 @@ class NumericalCalibrator(torch.nn.Module):
         return result
 
     @torch.no_grad()
-    def assert_constraints(self, eps=1e-6) -> List[str]:
+    def assert_constraints(self, eps=1e-6) -> list[str]:
         """Asserts that layer satisfies specified constraints.
 
         This checks that weights follow monotonicity constraints and that the output is
@@ -212,8 +211,12 @@ class NumericalCalibrator(torch.nn.Module):
             return
 
         original_bias, original_heights = self.kernel.data[0:1], self.kernel.data[1:]
-        previous_bias_delta = defaultdict(lambda: torch.zeros_like(original_bias))
-        previous_heights_delta = defaultdict(lambda: torch.zeros_like(original_heights))
+        previous_bias_delta: dict[str, torch.Tensor] = defaultdict(
+            lambda: torch.zeros_like(original_bias)
+        )
+        previous_heights_delta: dict[str, torch.Tensor] = defaultdict(
+            lambda: torch.zeros_like(original_heights)
+        )
 
         def apply_bound_constraints(bias, heights):
             previous_bias = bias - previous_bias_delta["BOUNDS"]
@@ -291,7 +294,7 @@ class NumericalCalibrator(torch.nn.Module):
 
     def _project_monotonic_bounds(
         self, bias: torch.Tensor, heights: torch.Tensor
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    ) -> tuple[torch.Tensor, torch.Tensor]:
         """Projects bias and heights into bounds considering monotonicity.
 
         For computation simplification in the case of decreasing monotonicity, we mirror
@@ -333,7 +336,7 @@ class NumericalCalibrator(torch.nn.Module):
 
     def _approximately_project_bounds_only(
         self, bias: torch.Tensor, heights: torch.Tensor
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    ) -> tuple[torch.Tensor, torch.Tensor]:
         """Projects bias and heights without considering monotonicity.
 
         It is worth noting that this projection is an approximation and is not an exact
@@ -367,7 +370,7 @@ class NumericalCalibrator(torch.nn.Module):
 
     def _squeeze_by_scaling(
         self, bias: torch.Tensor, heights: torch.Tensor
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    ) -> tuple[torch.Tensor, torch.Tensor]:
         """Squeezes monotonic calibrators by scaling them into bound constraints.
 
         It is worth noting that this is not an exact projection with respect to the L2
