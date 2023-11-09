@@ -5,10 +5,10 @@ single-dimensional input of categories represented as indices and transforms it 
 mapping a given category to its learned output value.
 """
 from collections import defaultdict
-from graphlib import CycleError, TopologicalSorter
 from typing import List, Optional, Tuple
 
 import torch
+from graphlib import CycleError, TopologicalSorter
 
 from ..enums import CategoricalCalibratorInit
 

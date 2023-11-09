@@ -1,10 +1,8 @@
 {
   "recommendations": [
+    "charliermarsh.ruff",
     "eamodio.gitlens",
     "github.vscode-github-actions",
-    "ms-python.black-formatter",
-    "ms-python.flake8",
-    "ms-python.isort",
     "ms-toolsai.jupyter",
     "ms-toolsai.jupyter-keymap",
     "ms-toolsai.jupyter-renderers",

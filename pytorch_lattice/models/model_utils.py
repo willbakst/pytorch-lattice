@@ -1,8 +1,8 @@
 """Common utilities for constructing calibrated models."""
 from typing import List, Optional, Union
 
-import torch
 import numpy as np
+import torch
 
 from ..enums import (
     CategoricalCalibratorInit,
@@ -10,9 +10,9 @@ from ..enums import (
     Monotonicity,
     NumericalCalibratorInit,
 )
-from .features import CategoricalFeature, NumericalFeature
 from ..layers.categorical_calibrator import CategoricalCalibrator
 from ..layers.numerical_calibrator import NumericalCalibrator
+from .features import CategoricalFeature, NumericalFeature
 
 
 def initialize_feature_calibrators(
@@ -132,7 +132,8 @@ def initialize_output_calibrator(
 
 
 def calibrate_and_stack(
-    x: torch.Tensor, calibrators: torch.nn.ModuleDict  # pylint: disable=invalid-name
+    x: torch.Tensor,
+    calibrators: torch.nn.ModuleDict,  # pylint: disable=invalid-name
 ) -> torch.Tensor:
     """Helper function to run calibrators along columns of given data.
 
