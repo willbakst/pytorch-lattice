@@ -1,6 +1,11 @@
+copyright: Copyright &copy; 2023 SOTAI Labs Inc.
 site_name: PyTorch Lattice
+repo_name: pytorch-lattice
+repo_url: https://github.com/ControlAI/pytorch-lattice/
 theme:
   name: material
+  icon:
+    repo: fontawesome/brands/github
   features:
     - content.code.annotation
     - content.code.copy
@@ -11,21 +16,24 @@ theme:
     - navigation.top
     - search.highlight
     - search.suggest
-    - toc.integrate
+    - toc.follow
   language: en
   palette:
     - scheme: default
       toggle:
-        icon: material/toggle-switch-off-outline
+        icon: material/brightness-7
         name: Switch to dark mode
       primary: blue-grey
       accent: deep-orange
     - scheme: slate
       toggle:
-        icon: material/toggle-switch-outline
+        icon: material/brightness-4
         name: Switch to light mode
       primary: blue-grey
       accent: deep-orange
+  font:
+    text: Roboto
+    code: Roboto Mono
 
 extra:
   social:
@@ -50,7 +58,21 @@ markdown_extensions:
   - pymdownx.mark
   - attr_list
   - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
-copyright: Copyright &copy; 2023 SOTAI Labs Inc.
+nav:
+  - Get Started:
+      - Welcome to PyTorch Lattice: "index.md"
+      - Why use PyTorch Lattice: "why.md"
+      - Installation: "installation.md"
+      - Quickstart: "quickstart.md"
+      - Contributing: "contributing.md"
+      - How to help us!: "help.md"
+      - Changelog: "changelog.md"
+  - Concepts:
+      - Placeholder: "placeholder.md"
+  - Walkthroughs:
+      - Placeholder: "placeholder.md"
+  - API Reference:
+      - Placeholder: "placeholder.md"
