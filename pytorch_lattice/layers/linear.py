@@ -8,10 +8,11 @@ from typing import Optional
 
 import torch
 
+from ..constrained_module import ConstrainedModule
 from ..enums import Monotonicity
 
 
-class Linear(torch.nn.Module):
+class Linear(ConstrainedModule):
     """A linear module.
 
     This module takes an input of shape `(batch_size, input_dim)` and applied a linear
@@ -98,6 +99,40 @@ class Linear(torch.nn.Module):
         return result
 
     @torch.no_grad()
+    def apply_constraints(self) -> None:
+        """Projects kernel into desired constraints."""
+        projected_kernel_data = self.kernel.data
+
+        if self.monotonicities:
+            if Monotonicity.INCREASING in self.monotonicities:
+                increasing_mask = torch.tensor(
+                    [
+                        [0.0] if m == Monotonicity.INCREASING else [1.0]
+                        for m in self.monotonicities
+                    ]
+                )
+                projected_kernel_data = torch.maximum(
+                    projected_kernel_data, projected_kernel_data * increasing_mask
+                )
+            if Monotonicity.DECREASING in self.monotonicities:
+                decreasing_mask = torch.tensor(
+                    [
+                        [0.0] if m == Monotonicity.DECREASING else [1.0]
+                        for m in self.monotonicities
+                    ]
+                )
+                projected_kernel_data = torch.minimum(
+                    projected_kernel_data, projected_kernel_data * decreasing_mask
+                )
+
+        if self.weighted_average:
+            norm = torch.norm(projected_kernel_data, 1)
+            norm = torch.where(norm < 1e-8, 1.0, norm)
+            projected_kernel_data /= norm
+
+        self.kernel.data = projected_kernel_data
+
+    @torch.no_grad()
     def assert_constraints(self, eps=1e-6) -> list[str]:
         """Asserts that layer satisfies specified constraints.
 
@@ -141,37 +176,3 @@ class Linear(torch.nn.Module):
                 )
 
         return messages
-
-    @torch.no_grad()
-    def constrain(self) -> None:
-        """Projects kernel into desired constraints."""
-        projected_kernel_data = self.kernel.data
-
-        if self.monotonicities:
-            if Monotonicity.INCREASING in self.monotonicities:
-                increasing_mask = torch.tensor(
-                    [
-                        [0.0] if m == Monotonicity.INCREASING else [1.0]
-                        for m in self.monotonicities
-                    ]
-                )
-                projected_kernel_data = torch.maximum(
-                    projected_kernel_data, projected_kernel_data * increasing_mask
-                )
-            if Monotonicity.DECREASING in self.monotonicities:
-                decreasing_mask = torch.tensor(
-                    [
-                        [0.0] if m == Monotonicity.DECREASING else [1.0]
-                        for m in self.monotonicities
-                    ]
-                )
-                projected_kernel_data = torch.minimum(
-                    projected_kernel_data, projected_kernel_data * decreasing_mask
-                )
-
-        if self.weighted_average:
-            norm = torch.norm(projected_kernel_data, 1)
-            norm = torch.where(norm < 1e-8, 1.0, norm)
-            projected_kernel_data /= norm
-
-        self.kernel.data = projected_kernel_data

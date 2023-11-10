@@ -215,7 +215,7 @@ def test_constrain_no_constraints(monotonicities, kernel_data, bias_data) -> Non
     linear.kernel.data = kernel_data
     if bias_data is not None:
         linear.bias.data = bias_data
-    linear.constrain()
+    linear.apply_constraints()
     assert torch.allclose(linear.kernel.data, kernel_data)
     if bias_data is not None:
         assert torch.allclose(linear.bias.data, bias_data)
@@ -266,7 +266,7 @@ def test_constrain_monotonicities(
     """Tests that constrain properly projects kernel according to monotonicies."""
     linear = Linear(kernel_data.size()[0], monotonicities=monotonicities)
     linear.kernel.data = kernel_data
-    linear.constrain()
+    linear.apply_constraints()
     assert torch.allclose(linear.kernel.data, expected_projected_kernel_data)
 
 
@@ -289,7 +289,7 @@ def test_constrain_weighted_average(
     """Tests that constrain properly projects kernel to be a weighted average."""
     linear = Linear(kernel_data.size()[0], weighted_average=True)
     linear.kernel.data = kernel_data
-    linear.constrain()
+    linear.apply_constraints()
     assert torch.allclose(linear.kernel.data, expected_projected_kernel_data)
 
 

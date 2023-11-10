@@ -10,10 +10,11 @@ from typing import Optional
 import numpy as np
 import torch
 
+from ..constrained_module import ConstrainedModule
 from ..enums import Monotonicity, NumericalCalibratorInit
 
 
-class NumericalCalibrator(torch.nn.Module):
+class NumericalCalibrator(ConstrainedModule):
     """A numerical calibrator.
 
     This module takes an input of shape `(batch_size, 1)` and calibrates it using a
@@ -150,49 +151,7 @@ class NumericalCalibrator(torch.nn.Module):
         return result
 
     @torch.no_grad()
-    def assert_constraints(self, eps=1e-6) -> list[str]:
-        """Asserts that layer satisfies specified constraints.
-
-        This checks that weights follow monotonicity constraints and that the output is
-        within bounds.
-
-        Args:
-            eps: the margin of error allowed
-
-        Returns:
-            A list of messages describing violated constraints including indices of
-            monotonicity violations. If no constraints violated, the list will be empty.
-        """
-        weights = torch.squeeze(self.kernel.data)
-        messages = []
-
-        if (
-            self.output_max is not None
-            and torch.max(self.keypoints_outputs()) > self.output_max + eps
-        ):
-            messages.append("Max weight greater than output_max.")
-        if (
-            self.output_min is not None
-            and torch.min(self.keypoints_outputs()) < self.output_min - eps
-        ):
-            messages.append("Min weight less than output_min.")
-
-        diffs = weights[1:]
-        violation_indices = []
-
-        if self.monotonicity == Monotonicity.INCREASING:
-            violation_indices = (diffs < -eps).nonzero().tolist()
-        elif self.monotonicity == Monotonicity.DECREASING:
-            violation_indices = (diffs > eps).nonzero().tolist()
-
-        violation_indices = [(i[0], i[0] + 1) for i in violation_indices]
-        if violation_indices:
-            messages.append(f"Monotonicity violated at: {str(violation_indices)}.")
-
-        return messages
-
-    @torch.no_grad()
-    def constrain(self) -> None:
+    def apply_constraints(self) -> None:
         """Jointly projects kernel into desired constraints.
 
         Uses Dykstra's alternating projection algorithm to jointly project onto all
@@ -271,6 +230,48 @@ class NumericalCalibrator(torch.nn.Module):
             )
 
         self.kernel.data = torch.cat((projected_bias, projected_heights), 0)
+
+    @torch.no_grad()
+    def assert_constraints(self, eps=1e-6) -> list[str]:
+        """Asserts that layer satisfies specified constraints.
+
+        This checks that weights follow monotonicity constraints and that the output is
+        within bounds.
+
+        Args:
+            eps: the margin of error allowed
+
+        Returns:
+            A list of messages describing violated constraints including indices of
+            monotonicity violations. If no constraints violated, the list will be empty.
+        """
+        weights = torch.squeeze(self.kernel.data)
+        messages = []
+
+        if (
+            self.output_max is not None
+            and torch.max(self.keypoints_outputs()) > self.output_max + eps
+        ):
+            messages.append("Max weight greater than output_max.")
+        if (
+            self.output_min is not None
+            and torch.min(self.keypoints_outputs()) < self.output_min - eps
+        ):
+            messages.append("Min weight less than output_min.")
+
+        diffs = weights[1:]
+        violation_indices = []
+
+        if self.monotonicity == Monotonicity.INCREASING:
+            violation_indices = (diffs < -eps).nonzero().tolist()
+        elif self.monotonicity == Monotonicity.DECREASING:
+            violation_indices = (diffs > eps).nonzero().tolist()
+
+        violation_indices = [(i[0], i[0] + 1) for i in violation_indices]
+        if violation_indices:
+            messages.append(f"Monotonicity violated at: {str(violation_indices)}.")
+
+        return messages
 
     @torch.no_grad()
     def keypoints_inputs(self) -> torch.Tensor:

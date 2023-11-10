@@ -247,7 +247,7 @@ def test_constrain(mock_linear_constrain, mock_output_calibrator_constrain):
         calibrator.constrain = mock_calibrator_constrain
         mock_constrains.append(mock_calibrator_constrain)
 
-    calibrated_linear.constrain()
+    calibrated_linear.apply_constraints()
 
     mock_linear_constrain.assert_called_once()
     mock_output_calibrator_constrain.assert_called_once()

@@ -255,7 +255,7 @@ def test_training(interpolation, lattice_dim):
         trained_predictions = calibrated_lattice(training_examples)
         trained_loss = loss_fn(trained_predictions, training_labels)
 
-    # calibrated_lattice.constrain()
+    # calibrated_lattice.apply_constraints()
     assert not calibrated_lattice.assert_constraints()
     assert trained_loss < initial_loss
     assert trained_loss < 0.08
@@ -324,7 +324,7 @@ def test_constrain(mock_lattice_constrain, mock_output_calibrator_constrain):
         calibrator.constrain = mock_calibrator_constrain
         mock_constrains.append(mock_calibrator_constrain)
 
-    calibrated_lattice.constrain()
+    calibrated_lattice.apply_constraints()
 
     mock_lattice_constrain.assert_called_once()
     mock_output_calibrator_constrain.assert_called_once()

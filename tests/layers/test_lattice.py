@@ -371,7 +371,7 @@ def test_project_monotonicity_simple(
     """Tests _project_monotonicity with a simple 2x2, 1-unit example."""
     lattice = Lattice(lattice_sizes=[2, 2], monotonicities=monotonicities)
     lattice.kernel.data = torch.tensor([[4], [3], [2], [1]]).double()
-    lattice.constrain()
+    lattice.apply_constraints()
     assert torch.allclose(lattice.kernel.data, expected_out.view(-1, 1).double())
 
 
@@ -434,7 +434,7 @@ def test_project_monotonicity_complex(
     col1 = torch.arange(12, 0, -1).reshape(-1, 1).double()
     col2 = torch.arange(24, 12, -1).reshape(-1, 1).double()
     lattice.kernel.data = torch.cat((col1, col2), dim=1)
-    lattice.constrain()
+    lattice.apply_constraints()
     assert torch.allclose(lattice.kernel.data, expected_out.view(-1, 2).double())
 
 
@@ -566,5 +566,5 @@ def test_constrain_clipping_functionality(out_min, out_max, kernel_data, expecte
     """Tests that constrain() method clips out of bounds weights to output min/max."""
     lattice = Lattice([2, 2], units=2, output_max=out_max, output_min=out_min)
     lattice.kernel.data = kernel_data
-    lattice.constrain()
+    lattice.apply_constraints()
     assert torch.allclose(lattice.kernel.data, expected_out)
