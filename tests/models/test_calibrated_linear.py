@@ -221,10 +221,12 @@ def test_assert_constraints(
         mock_assert.assert_called_once()
 
 
-@patch.object(Linear, "constrain")
-@patch.object(NumericalCalibrator, "constrain")
-def test_constrain(mock_linear_constrain, mock_output_calibrator_constrain):
-    """Tests `constrain()` method calls internal constrain functions."""
+@patch.object(Linear, "apply_constraints")
+@patch.object(NumericalCalibrator, "apply_constraints")
+def test_constrain(
+    mock_linear_apply_constraints, mock_output_calibrator_apply_constraints
+):
+    """Tests `apply_constraints()` method calls internal constraint functions."""
     calibrated_linear = CalibratedLinear(
         features=[
             NumericalFeature(
@@ -241,17 +243,17 @@ def test_constrain(mock_linear_constrain, mock_output_calibrator_constrain):
         ],
         output_calibration_num_keypoints=2,
     )
-    mock_constrains = []
+    mock_apply_constraints_fns = []
     for calibrator in calibrated_linear.calibrators.values():
-        mock_calibrator_constrain = Mock()
-        calibrator.constrain = mock_calibrator_constrain
-        mock_constrains.append(mock_calibrator_constrain)
+        mock_calibrator_apply_constraints = Mock()
+        calibrator.apply_constraints = mock_calibrator_apply_constraints
+        mock_apply_constraints_fns.append(mock_calibrator_apply_constraints)
 
     calibrated_linear.apply_constraints()
 
-    mock_linear_constrain.assert_called_once()
-    mock_output_calibrator_constrain.assert_called_once()
-    for mock_constrain in mock_constrains:
+    mock_linear_apply_constraints.assert_called_once()
+    mock_output_calibrator_apply_constraints.assert_called_once()
+    for mock_constrain in mock_apply_constraints_fns:
         mock_constrain.assert_called_once()
 
 
