@@ -13,24 +13,13 @@ class FeatureConfig:
     `categeories` attribute is `None`, then this feature will be handled as numerical.
     Otherwise, it will be handled as categorical.
 
+    Example:
+    ```python
+    fc = FeatureConfig(name="feature_name").num_keypoints(10).monotonicity("increasing")
+    ```
+
     Attributes:
         name: The name of the feature.
-        categories: The categories for a categorical feature.
-        num_keypoints: The number of keypoints to use for a numerical feature.
-        input_keypoints_init: The method for initializing the input keypoints for a
-            numerical calibrator.
-        input_keypoints_type: The type of input keypoints to use for a numerical
-            calibrator.
-        monotonicity: The monotonicity constraint, if any. For numerical features, this
-            should be an instance of `Monotonicity`. For categorical features, this
-            should be a list of pairs of categories that should be constrained to be
-            increasing such that for the pair `(a, b)` the category `b` will always have
-            a higher output compared to `a`, all else being equal.
-        projection_iterations: Number of times to run Dykstra's projection algorithm
-            when applying constraints to a numerical calibrator. The more iterations,
-            the more accurate the projection will be, but the longer it will take to
-            run. Should a monotonicity constraint not be satisfied after training, try
-            increasing this value.
     """
 
     def __init__(self, name: str):
