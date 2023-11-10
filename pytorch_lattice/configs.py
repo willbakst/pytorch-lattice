@@ -33,24 +33,15 @@ class FeatureConfig:
             increasing this value.
     """
 
-    def __init__(
-        self,
-        name: str,
-        categories: Optional[list[str]] = None,
-        num_keypoints: int = 5,
-        input_keypoints_init: InputKeypointsInit = InputKeypointsInit.QUANTILES,
-        input_keypoints_type: InputKeypointsType = InputKeypointsType.FIXED,
-        monotonicity: Optional[Union[Monotonicity, list[tuple[str, str]]]] = None,
-        projection_iterations: int = 8,
-    ):
-        """Initializes an instance of `FeatureConfig`."""
+    def __init__(self, name: str):
+        """Initializes an instance of `FeatureConfig` with default values."""
         self.name = name
-        self._categories = categories
-        self._num_keypoints = num_keypoints
-        self._input_keypoints_init = input_keypoints_init
-        self._input_keypoints_type = input_keypoints_type
-        self._monotonicity = monotonicity
-        self._projection_iterations = projection_iterations
+        self._categories: Optional[list[str]] = None
+        self._num_keypoints: int = 5
+        self._input_keypoints_init: InputKeypointsInit = InputKeypointsInit.QUANTILES
+        self._input_keypoints_type: InputKeypointsType = InputKeypointsType.FIXED
+        self._monotonicity: Optional[Union[Monotonicity, list[tuple[str, str]]]] = None
+        self._projection_iterations: int = 8
 
     def categories(self, categories: list[str]) -> FeatureConfig:
         """Sets the categories for a categorical feature."""
