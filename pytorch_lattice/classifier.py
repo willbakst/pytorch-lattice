@@ -21,19 +21,20 @@ class Classifier:
     ```
 
     Attributes:
-        - All `__init__` arguments.
+        features: A dict mapping feature names to their corresponding `FeatureConfig`
+            instances.
     """
 
-    def __init__(self, features: list[str]):
+    def __init__(self, feature_names: list[str]):
         """Initializes an instance of `Classifier`."""
-        self.features = features
-        self.feature_configs = {
-            feature: FeatureConfig(name=feature) for feature in features
+        self.features = {
+            feature_name: FeatureConfig(name=feature_name)
+            for feature_name in feature_names
         }
 
     def configure(self, feature_name: str):
         """Returns a `FeatureConfig` object for the given feature name."""
-        return self.feature_configs[feature_name]
+        return self.features[feature_name]
 
     def fit(self, X: pd.DataFrame, y: np.ndarray) -> Classifier:
         """Returns this classifier fit to the given data."""
