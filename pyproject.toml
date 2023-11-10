@@ -4,12 +4,12 @@ version = "0.0.0"
 description = "A PyTorch Implementation Of Lattice Modeling Techniques"
 license = "MIT"
 authors = ["William Bakst <will@sotai.ai>"]
-readme = "README.md"
+readme = "docs/README.md"
 packages = [{include = "pytorch_lattice"}]
 repository = "https://github.com/ControlAI/pytorch-lattice"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.9, <=3.12"
 matplotlib = "^3.7.1"
 numpy = "^1.23.5"
 pandas = "^1.5.3"
@@ -25,6 +25,7 @@ mkdocstrings-python = "^1.1.2"
 mypy = "^1.6.1"
 pytest = "^7.4.0"
 ruff = "^0.1.5"
+pandas-stubs = "^2.1.1.230928"
 
 [tool.ruff]
 exclude = [
