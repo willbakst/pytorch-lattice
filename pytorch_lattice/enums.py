@@ -72,7 +72,6 @@ class Monotonicity(_Enum):
     - DECREASING: decreasing monotonicity i.e. increasing input decreases output.
     """
 
-    NONE = "none"
     INCREASING = "increasing"
     DECREASING = "decreasing"
 

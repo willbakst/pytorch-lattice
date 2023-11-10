@@ -18,7 +18,7 @@ from ..utils import train_calibrated_module
             None,
             None,
             None,
-            Monotonicity.NONE,
+            None,
             NumericalCalibratorInit.EQUAL_HEIGHTS,
             10,
             torch.tensor([[[-2.0]] + ([[1.0]] * 4)]).double(),
@@ -187,7 +187,7 @@ def test_forward(input_keypoints, kernel_init, kernel_data, inputs, expected_out
             Monotonicity.DECREASING,
             ["Monotonicity violated at: [(0, 1), (2, 3)]."],
         ),
-        (torch.tensor([[-0.4], [1.0], [-1.0], [0.0]]), Monotonicity.NONE, []),
+        (torch.tensor([[-0.4], [1.0], [-1.0], [0.0]]), None, []),
     ],
 )
 def test_assert_constraints_monotonicity(kernel_data, monotonicity, expected_out):
@@ -222,7 +222,7 @@ def test_assert_constraints_output_bounds(kernel_data, expected_out):
     """Tests assert_constraints for output bounds with a tolerance of eps."""
     calibrator = NumericalCalibrator(np.linspace(1.0, 4.0, num=4))
     calibrator.kernel.data = kernel_data
-    calibrator.monotonicity = Monotonicity.NONE
+    calibrator.monotonicity = None
     calibrator.output_min = 0.0
     calibrator.output_max = 1.0
     assert calibrator.assert_constraints(eps=0.1) == expected_out
@@ -702,7 +702,7 @@ def test_approximately_project_bounds_only(
         np.linspace(1.0, 4.0, num=4),
         output_min=output_min,
         output_max=output_max,
-        monotonicity=Monotonicity.NONE,
+        monotonicity=None,
     )
     bias, heights = kernel_data[0:1], kernel_data[1:]
     (
@@ -818,7 +818,7 @@ def test_training():
         np.linspace(-2.0, 2.0, num=21),
         output_min=output_min,
         output_max=output_max,
-        monotonicity=Monotonicity.NONE,
+        monotonicity=None,
     )
 
     loss_fn = torch.nn.MSELoss()

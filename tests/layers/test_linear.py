@@ -90,8 +90,8 @@ def test_forward(kernel_data, bias_data, inputs, expected_outputs) -> None:
         ),
         (
             [
-                Monotonicity.NONE,
-                Monotonicity.NONE,
+                None,
+                None,
                 Monotonicity.DECREASING,
                 Monotonicity.INCREASING,
             ],
@@ -135,12 +135,12 @@ def test_assert_constraints_monotonicty(
             [],
         ),
         (
-            [Monotonicity.INCREASING, Monotonicity.DECREASING, Monotonicity.NONE],
+            [Monotonicity.INCREASING, Monotonicity.DECREASING, None],
             torch.tensor([[1.5], [-2.2], [1.7]]).double(),
             [],
         ),
         (
-            [Monotonicity.INCREASING, Monotonicity.DECREASING, Monotonicity.NONE],
+            [Monotonicity.INCREASING, Monotonicity.DECREASING, None],
             torch.tensor([[1.5], [-2.2], [2.7]]).double(),
             ["Weights do not sum to 1."],
         ),
@@ -167,12 +167,12 @@ def test_assert_constraints_weighted_average(
             [],
         ),
         (
-            [Monotonicity.DECREASING, Monotonicity.NONE, Monotonicity.DECREASING],
+            [Monotonicity.DECREASING, None, Monotonicity.DECREASING],
             torch.tensor([[0.4], [0.01], [0.6]]).double(),
             ["Monotonicity violated at: [0, 2]"],
         ),
         (
-            [Monotonicity.INCREASING, Monotonicity.NONE, Monotonicity.DECREASING],
+            [Monotonicity.INCREASING, None, Monotonicity.DECREASING],
             torch.tensor([[-0.5], [2.0], [0.5]]).double(),
             ["Weights do not sum to 1.", "Monotonicity violated at: [0, 2]"],
         ),
@@ -198,12 +198,12 @@ def test_assert_constraints_combo(monotonicities, kernel_data, expected_out) -> 
             torch.tensor([1.0]).double(),
         ),
         (
-            [Monotonicity.NONE, Monotonicity.NONE, Monotonicity.NONE],
+            [None, None, None],
             torch.tensor([[1.2], [2.5], [3.1]]).double(),
             torch.tensor([1.0]).double(),
         ),
         (
-            [Monotonicity.NONE, Monotonicity.NONE, Monotonicity.NONE],
+            [None, None, None],
             torch.tensor([[1.2], [2.5], [3.1]]).double(),
             torch.tensor([1.0]).double(),
         ),
@@ -226,7 +226,7 @@ def test_constrain_no_constraints(monotonicities, kernel_data, bias_data) -> Non
     [
         (
             [
-                Monotonicity.NONE,
+                None,
                 Monotonicity.INCREASING,
                 Monotonicity.DECREASING,
             ],
@@ -235,9 +235,9 @@ def test_constrain_no_constraints(monotonicities, kernel_data, bias_data) -> Non
         ),
         (
             [
-                Monotonicity.NONE,
+                None,
                 Monotonicity.INCREASING,
-                Monotonicity.NONE,
+                None,
             ],
             torch.tensor([[1.0], [0.2], [-2.0]]).double(),
             torch.tensor([[1.0], [0.2], [-2.0]]).double(),

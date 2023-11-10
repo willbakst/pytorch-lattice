@@ -30,7 +30,7 @@ class Linear(torch.nn.Module):
     linear = Linear(
       input_dim,
       monotonicities=[
-        Monotonicity.NONE,
+        None,
         Monotonicity.INCREASING,
         Monotonicity.DECREASING
       ],
@@ -44,7 +44,7 @@ class Linear(torch.nn.Module):
     def __init__(
         self,
         input_dim,
-        monotonicities: Optional[list[Monotonicity]] = None,
+        monotonicities: Optional[list[Optional[Monotonicity]]] = None,
         use_bias: bool = True,
         weighted_average: bool = False,
     ) -> None:

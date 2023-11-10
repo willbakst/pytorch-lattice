@@ -21,7 +21,7 @@ def test_init_required_args():
                 feature_name="numerical_feature",
                 data=np.array([1.0, 2.0, 3.0, 4.0, 5.0]),
                 num_keypoints=5,
-                monotonicity=Monotonicity.NONE,
+                monotonicity=None,
             ),
             CategoricalFeature(
                 feature_name="categorical_feature",
@@ -89,9 +89,9 @@ def test_init_required_args():
             8.0,
             Interpolation.HYPERCUBE,
             5,
-            [Monotonicity.NONE, Monotonicity.NONE],
+            [None, None],
             [4, 4],
-            Monotonicity.NONE,
+            None,
         ),
     ],
 )
@@ -273,7 +273,7 @@ def test_assert_constraints(
                 feature_name="numerical_feature",
                 data=np.array([1.0, 2.0, 3.0, 4.0, 5.0]),
                 num_keypoints=5,
-                monotonicity=Monotonicity.NONE,
+                monotonicity=None,
             ),
             CategoricalFeature(
                 feature_name="categorical_feature",
@@ -308,7 +308,7 @@ def test_constrain(mock_lattice_constrain, mock_output_calibrator_constrain):
                 feature_name="numerical_feature",
                 data=np.array([1.0, 2.0, 3.0, 4.0, 5.0]),
                 num_keypoints=5,
-                monotonicity=Monotonicity.NONE,
+                monotonicity=None,
             ),
             CategoricalFeature(
                 feature_name="categorical_feature",

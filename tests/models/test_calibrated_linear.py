@@ -26,7 +26,7 @@ from ..utils import train_calibrated_module
                     feature_name="numerical_feature",
                     data=np.array([1.0, 2.0, 3.0, 4.0, 5.0]),
                     num_keypoints=5,
-                    monotonicity=Monotonicity.NONE,
+                    monotonicity=None,
                 ),
                 CategoricalFeature(
                     feature_name="categorical_feature",
@@ -38,7 +38,7 @@ from ..utils import train_calibrated_module
             None,
             None,
             [
-                Monotonicity.NONE,
+                None,
                 Monotonicity.INCREASING,
             ],
             Monotonicity.INCREASING,
@@ -49,7 +49,7 @@ from ..utils import train_calibrated_module
                     feature_name="numerical_feature",
                     data=np.array([1.0, 2.0, 3.0, 4.0, 5.0]),
                     num_keypoints=5,
-                    monotonicity=Monotonicity.NONE,
+                    monotonicity=None,
                 ),
                 CategoricalFeature(
                     feature_name="categorical_feature",
@@ -64,7 +64,7 @@ from ..utils import train_calibrated_module
                 Monotonicity.INCREASING,
                 Monotonicity.INCREASING,
             ],
-            Monotonicity.NONE,
+            None,
         ),
         (
             [
@@ -197,7 +197,7 @@ def test_assert_constraints(
                 feature_name="numerical_feature",
                 data=np.array([1.0, 2.0, 3.0, 4.0, 5.0]),
                 num_keypoints=5,
-                monotonicity=Monotonicity.NONE,
+                monotonicity=None,
             ),
             CategoricalFeature(
                 feature_name="categorical_feature",
@@ -231,7 +231,7 @@ def test_constrain(mock_linear_constrain, mock_output_calibrator_constrain):
                 feature_name="numerical_feature",
                 data=np.array([1.0, 2.0, 3.0, 4.0, 5.0]),
                 num_keypoints=5,
-                monotonicity=Monotonicity.NONE,
+                monotonicity=None,
             ),
             CategoricalFeature(
                 feature_name="categorical_feature",

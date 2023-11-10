@@ -3,7 +3,6 @@ from typing import Optional, Union
 
 import torch
 
-from ..enums import Monotonicity
 from ..layers import Linear
 from .features import CategoricalFeature, NumericalFeature
 from .model_utils import (
@@ -101,7 +100,7 @@ class CalibratedLinear(torch.nn.Module):
 
         self.output_calibrator = initialize_output_calibrator(
             output_calibration_num_keypoints=output_calibration_num_keypoints,
-            monotonic=not all(m == Monotonicity.NONE for m in self.monotonicities),
+            monotonic=not all(m is None for m in self.monotonicities),
             output_min=output_min,
             output_max=output_max,
         )

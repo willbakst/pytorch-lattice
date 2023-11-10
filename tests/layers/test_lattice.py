@@ -351,15 +351,15 @@ def test_bucketize_consecutive_inputs(
             torch.tensor([[2.5, 2.5], [2.5, 2.5]]),
         ),
         (
-            [Monotonicity.INCREASING, Monotonicity.NONE],
+            [Monotonicity.INCREASING, None],
             torch.tensor([[3.0, 2.0], [3.0, 2.0]]),
         ),
         (
-            [Monotonicity.NONE, Monotonicity.INCREASING],
+            [None, Monotonicity.INCREASING],
             torch.tensor([[3.5, 3.5], [1.5, 1.5]]),
         ),
         (
-            [Monotonicity.NONE, Monotonicity.NONE],
+            [None, None],
             torch.tensor([[4.0, 3.0], [2.0, 1.0]]),
         ),
     ],
@@ -394,7 +394,7 @@ def test_project_monotonicity_simple(
             ),
         ),
         (
-            [Monotonicity.INCREASING, Monotonicity.NONE, Monotonicity.NONE],
+            [Monotonicity.INCREASING, None, None],
             torch.tensor(
                 [
                     [
@@ -409,7 +409,7 @@ def test_project_monotonicity_simple(
             ),
         ),
         (
-            [Monotonicity.INCREASING, Monotonicity.NONE, Monotonicity.INCREASING],
+            [Monotonicity.INCREASING, None, Monotonicity.INCREASING],
             torch.tensor(
                 [
                     [
@@ -455,19 +455,19 @@ def test_project_monotonicity_complex(
         ),
         (
             (2, 2),
-            [Monotonicity.INCREASING, Monotonicity.NONE],
+            [Monotonicity.INCREASING, None],
             torch.tensor([[4.0], [3.0], [2.0], [1.0]]),
             ["Monotonicity violated at feature index 0."],
         ),
         (
             (2, 2),
-            [Monotonicity.NONE, Monotonicity.INCREASING],
+            [None, Monotonicity.INCREASING],
             torch.tensor([[4.0], [3.0], [2.0], [1.0]]),
             ["Monotonicity violated at feature index 1."],
         ),
         (
             (2, 2, 3),
-            [Monotonicity.INCREASING, Monotonicity.NONE, Monotonicity.INCREASING],
+            [Monotonicity.INCREASING, None, Monotonicity.INCREASING],
             torch.tensor(
                 [
                     [4.0, 2.8],

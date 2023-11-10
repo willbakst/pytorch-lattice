@@ -46,7 +46,7 @@ class NumericalCalibrator(torch.nn.Module):
         missing_input_value: Optional[float] = None,
         output_min: Optional[float] = None,
         output_max: Optional[float] = None,
-        monotonicity: Monotonicity = Monotonicity.NONE,
+        monotonicity: Optional[Monotonicity] = None,
         kernel_init: NumericalCalibratorInit = NumericalCalibratorInit.EQUAL_HEIGHTS,
         projection_iterations: int = 8,
     ) -> None:
@@ -203,7 +203,7 @@ class NumericalCalibrator(torch.nn.Module):
         Enough iterations make the impact of this approximation negligible.
         """
         constrain_bounds = self.output_min is not None or self.output_max is not None
-        constrain_monotonicity = self.monotonicity != Monotonicity.NONE
+        constrain_monotonicity = self.monotonicity is not None
         num_constraints = sum([constrain_bounds, constrain_monotonicity])
 
         # We do nothing to the weights in this case

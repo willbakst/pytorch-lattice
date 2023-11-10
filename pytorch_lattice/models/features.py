@@ -35,7 +35,7 @@ class NumericalFeature:
         num_keypoints: int = 10,
         input_keypoints_init: InputKeypointsInit = InputKeypointsInit.QUANTILES,
         missing_input_value: Optional[float] = None,
-        monotonicity: Monotonicity = Monotonicity.NONE,
+        monotonicity: Optional[Monotonicity] = None,
         projection_iterations: int = 8,
         lattice_size: int = 2,
     ) -> None:
