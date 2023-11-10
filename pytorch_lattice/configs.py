@@ -1,12 +1,12 @@
 """Configuration objects for the PyTorch Lattice library."""
-from typing import Optional, Union
+from __future__ import annotations
 
-from pydantic import BaseModel
+from typing import Optional, Union
 
 from .enums import InputKeypointsInit, InputKeypointsType, Monotonicity
 
 
-class FeatureConfig(BaseModel):
+class FeatureConfig:
     """A configuration object for a feature in a calibrated model.
 
     This configuration object handles both numerical and categorical features. If the
@@ -33,10 +33,57 @@ class FeatureConfig(BaseModel):
             increasing this value.
     """
 
-    name: str
-    categories: Optional[list[str]] = None
-    num_keypoints: int = 5
-    input_keypoints_init: InputKeypointsInit = InputKeypointsInit.QUANTILES
-    input_keypoints_type: InputKeypointsType = InputKeypointsType.FIXED
-    monotonicity: Optional[Union[Monotonicity, list[tuple[str, str]]]] = None
-    projection_iterations: int = 8
+    def __init__(
+        self,
+        name: str,
+        categories: Optional[list[str]] = None,
+        num_keypoints: int = 5,
+        input_keypoints_init: InputKeypointsInit = InputKeypointsInit.QUANTILES,
+        input_keypoints_type: InputKeypointsType = InputKeypointsType.FIXED,
+        monotonicity: Optional[Union[Monotonicity, list[tuple[str, str]]]] = None,
+        projection_iterations: int = 8,
+    ):
+        """Initializes an instance of `FeatureConfig`."""
+        self.name = name
+        self._categories = categories
+        self._num_keypoints = num_keypoints
+        self._input_keypoints_init = input_keypoints_init
+        self._input_keypoints_type = input_keypoints_type
+        self._monotonicity = monotonicity
+        self._projection_iterations = projection_iterations
+
+    def categories(self, categories: list[str]) -> FeatureConfig:
+        """Sets the categories for a categorical feature."""
+        self._categories = categories
+        return self
+
+    def num_keypoints(self, num_keypoints: int) -> FeatureConfig:
+        """Sets the categories for a categorical feature."""
+        self._num_keypoints = num_keypoints
+        return self
+
+    def input_keypoints_init(
+        self, input_keypoints_init: InputKeypointsInit
+    ) -> FeatureConfig:
+        """Sets the input keypoints initialization method for a numerical calibrator."""
+        self._input_keypoints_init = input_keypoints_init
+        return self
+
+    def input_keypoints_type(
+        self, input_keypoints_type: InputKeypointsType
+    ) -> FeatureConfig:
+        """Sets the input keypoints type for a numerical calibrator."""
+        self._input_keypoints_type = input_keypoints_type
+        return self
+
+    def monotonicity(
+        self, monotonicity: Optional[Union[Monotonicity, list[tuple[str, str]]]]
+    ) -> FeatureConfig:
+        """Sets the monotonicity constraint for a feature."""
+        self._monotonicity = monotonicity
+        return self
+
+    def projection_iterations(self, projection_iterations: int) -> FeatureConfig:
+        """Sets the number of projection iterations for a numerical calibrator."""
+        self._projection_iterations = projection_iterations
+        return self

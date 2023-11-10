@@ -20,4 +20,10 @@ class Classifier:
     def __init__(self, features: list[str]):
         """Initializes an instance of `Classifier`."""
         self.features = features
-        self.feature_configs = [FeatureConfig(name=feature) for feature in features]
+        self.feature_configs = {
+            feature: FeatureConfig(name=feature) for feature in features
+        }
+
+    def configure(self, feature_name: str):
+        """Returns a `FeatureConfig` object for the given feature name."""
+        return self.feature_configs[feature_name]

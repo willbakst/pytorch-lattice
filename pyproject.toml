@@ -54,7 +54,7 @@ line-length = 88
 target-version = "py38"
 
 [tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F401", "F403"]
+"__init__.py" = ["F401"]
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F"]

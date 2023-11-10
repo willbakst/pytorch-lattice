@@ -5,4 +5,14 @@
 # current release. Use Semantic Versioning.
 __version__ = "0.0.0"
 
-from .enums import *
+from . import configs
+from .classifier import Classifier
+from .enums import (
+    CategoricalCalibratorInit,
+    InputKeypointsInit,
+    InputKeypointsType,
+    Interpolation,
+    LatticeInit,
+    Monotonicity,
+    NumericalCalibratorInit,
+)
