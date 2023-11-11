@@ -6,7 +6,7 @@ import torch
 from pytorch_lattice import Monotonicity, NumericalCalibratorInit
 from pytorch_lattice.layers import NumericalCalibrator
 
-from ..test_utils import train_calibrated_module
+from ..testing_utils import train_calibrated_module
 
 
 @pytest.mark.parametrize(

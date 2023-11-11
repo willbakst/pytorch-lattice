@@ -67,9 +67,12 @@ class Classifier:
         epochs: int = 50,
         batch_size: int = 64,
         learning_rate: float = 1e-3,
-        shuffle: bool = True,
+        shuffle: bool = False,
     ) -> Classifier:
         """Returns this classifier after fitting a model to the given data.
+
+        Note that calling this function will overwrite any existing model and train a
+        new model from scratch.
 
         Args:
             X: A `pd.DataFrame` containing the features for the training data.
