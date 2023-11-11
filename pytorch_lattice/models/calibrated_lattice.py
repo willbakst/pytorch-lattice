@@ -35,17 +35,16 @@ class CalibratedLattice(ConstrainedModule):
     Example:
 
     ```python
-    csv_data = CSVData(...)
-
     feature_configs = [...]
     calibrated_model = CalibratedLattice(feature_configs, ...)
 
     loss_fn = torch.nn.MSELoss()
     optimizer = torch.optim.Adam(calibrated_model.parameters(recurse=True), lr=1e-1)
 
-    csv_data.prepare(feature_configs, "target", ...)
+    dataset = pyl.utils.data.Dataset(...)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=64, shuffle=True)
     for epoch in range(100):
-        for examples, targets in csv_data.batch(64):
+        for inputs, labels in dataloader:
             optimizer.zero_grad()
             outputs = calibrated_model(inputs)
             loss = loss_fn(outputs, labels)
