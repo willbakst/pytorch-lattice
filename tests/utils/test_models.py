@@ -11,7 +11,7 @@ from pytorch_lattice import (
     NumericalCalibratorInit,
 )
 from pytorch_lattice.models.features import CategoricalFeature, NumericalFeature
-from pytorch_lattice.models.model_utils import (
+from pytorch_lattice.utils.models import (
     calibrate_and_stack,
     initialize_feature_calibrators,
     initialize_monotonicities,

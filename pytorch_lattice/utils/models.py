@@ -1,4 +1,4 @@
-"""Common utilities for constructing calibrated models."""
+"""Utility functions for use in model classes."""
 from typing import Optional, Union
 
 import numpy as np
@@ -11,7 +11,7 @@ from ..enums import (
 )
 from ..layers.categorical_calibrator import CategoricalCalibrator
 from ..layers.numerical_calibrator import NumericalCalibrator
-from .features import CategoricalFeature, NumericalFeature
+from ..models.features import CategoricalFeature, NumericalFeature
 
 
 def initialize_feature_calibrators(

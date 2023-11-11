@@ -9,13 +9,13 @@ from ..enums import (
     LatticeInit,
 )
 from ..layers import Lattice
-from .features import CategoricalFeature, NumericalFeature
-from .model_utils import (
+from ..utils.models import (
     calibrate_and_stack,
     initialize_feature_calibrators,
     initialize_monotonicities,
     initialize_output_calibrator,
 )
+from .features import CategoricalFeature, NumericalFeature
 
 
 class CalibratedLattice(ConstrainedModule):

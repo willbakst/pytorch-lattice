@@ -13,7 +13,7 @@ from pytorch_lattice.models import (
     NumericalFeature,
 )
 
-from ..utils import train_calibrated_module
+from ..test_utils import train_calibrated_module
 
 
 @pytest.mark.parametrize(
