@@ -39,3 +39,7 @@ class Classifier:
     def fit(self, X: pd.DataFrame, y: np.ndarray) -> Classifier:
         """Returns this classifier fit to the given data."""
         raise NotImplementedError()
+
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        """Returns predictions for the given data."""
+        raise NotImplementedError()
