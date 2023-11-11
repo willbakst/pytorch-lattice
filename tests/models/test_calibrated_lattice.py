@@ -10,7 +10,7 @@ from pytorch_lattice.layers import Lattice, NumericalCalibrator
 from pytorch_lattice.models import CalibratedLattice
 from pytorch_lattice.models.features import CategoricalFeature, NumericalFeature
 
-from ..utils import train_calibrated_module
+from ..test_utils import train_calibrated_module
 
 
 def test_init_required_args():

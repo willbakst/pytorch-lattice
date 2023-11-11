@@ -6,7 +6,7 @@ import torch
 from pytorch_lattice import Monotonicity
 from pytorch_lattice.layers import Linear
 
-from ..utils import train_calibrated_module
+from ..test_utils import train_calibrated_module
 
 
 @pytest.mark.parametrize(
