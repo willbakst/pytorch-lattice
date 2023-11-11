@@ -1,4 +1,4 @@
-"""Tests for util functions for calibrated models."""
+"""Tests for models utilities."""
 from unittest.mock import Mock
 
 import numpy as np
