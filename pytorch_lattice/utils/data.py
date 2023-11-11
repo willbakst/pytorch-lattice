@@ -8,6 +8,18 @@ import torch
 from ..models.features import CategoricalFeature, NumericalFeature
 
 
+def prepare_features(
+    X: pd.DataFrame, features: list[Union[NumericalFeature, CategoricalFeature]]
+):
+    """Maps categorical features to their integer indices in place."""
+    for feature in features:
+        if isinstance(feature, CategoricalFeature):
+            feature_data = X[feature.feature_name].map(feature.category_indices)
+            if feature.missing_input_value is not None:
+                feature_data = feature_data.fillna(feature.missing_input_value)
+            X[feature.feature_name] = feature_data
+
+
 class Dataset(torch.utils.data.Dataset):
     """A class for loading a dataset for a calibrated model."""
 
@@ -28,15 +40,10 @@ class Dataset(torch.utils.data.Dataset):
 
         drop_features = list(set(self.X.columns) - set(selected_features))
         self.X.drop(drop_features, axis=1, inplace=True)
+        prepare_features(self.X, features)
 
-        for feature in features:
-            if isinstance(feature, CategoricalFeature):
-                feature_data = self.X[feature.feature_name].map(
-                    feature.category_indices
-                )
-                if feature.missing_input_value is not None:
-                    feature_data = feature_data.fillna(feature.missing_input_value)
-                self.X[feature.feature_name] = feature_data
+        self.data = torch.from_numpy(self.X.values).double()
+        self.labels = torch.from_numpy(self.y).double()[:, None]
 
     def __len__(self):
         return len(self.X)
@@ -45,4 +52,4 @@ class Dataset(torch.utils.data.Dataset):
         if isinstance(idx, torch.Tensor):
             idx = idx.tolist()
 
-        return [self.X.iloc[idx].values, self.y[idx]]
+        return [self.data[idx], self.labels[idx]]

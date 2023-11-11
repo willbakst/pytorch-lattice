@@ -7,11 +7,8 @@ import torch
 
 from pytorch_lattice import Monotonicity
 from pytorch_lattice.layers import Linear, NumericalCalibrator
-from pytorch_lattice.models import (
-    CalibratedLinear,
-    CategoricalFeature,
-    NumericalFeature,
-)
+from pytorch_lattice.models import CalibratedLinear
+from pytorch_lattice.models.features import CategoricalFeature, NumericalFeature
 
 from ..test_utils import train_calibrated_module
 

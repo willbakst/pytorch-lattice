@@ -1996,6 +1996,17 @@ files = [
 ]
 
 [[package]]
+name = "types-tqdm"
+version = "4.66.0.4"
+description = "Typing stubs for tqdm"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "types-tqdm-4.66.0.4.tar.gz", hash = "sha256:a2f0ebd4cfd48f4914395819a176d7947387e1b98f9228fca38f8cac1b59891c"},
+    {file = "types_tqdm-4.66.0.4-py3-none-any.whl", hash = "sha256:8eda4c5123dd66985a4cb44268705cfa18beb32d66772271ae185e92b8b10c40"},
+]
+
+[[package]]
 name = "typing-extensions"
 version = "4.8.0"
 description = "Backported and Experimental Type Hints for Python 3.8+"
@@ -2105,4 +2116,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9, <=3.12"
-content-hash = "e3a7f678015cb365eaf5d144b49e4914414d83a97b22398c7474600f10301f56"
+content-hash = "4e1ea1420db9aa083efd58678847fcd3b2f73cdda7bacdcfffecebacb52bda26"

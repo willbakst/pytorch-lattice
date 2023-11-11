@@ -31,6 +31,7 @@ class FeatureConfig:
         self._input_keypoints_type: InputKeypointsType = InputKeypointsType.FIXED
         self._monotonicity: Optional[Union[Monotonicity, list[tuple[str, str]]]] = None
         self._projection_iterations: int = 8
+        self._lattice_size: int = 2  # only used in lattice models
 
     def categories(self, categories: list[str]) -> FeatureConfig:
         """Sets the categories for a categorical feature."""
@@ -66,4 +67,9 @@ class FeatureConfig:
     def projection_iterations(self, projection_iterations: int) -> FeatureConfig:
         """Sets the number of projection iterations for a numerical calibrator."""
         self._projection_iterations = projection_iterations
+        return self
+
+    def lattice_size(self, lattice_size: int) -> FeatureConfig:
+        """Sets the lattice size for a feature."""
+        self._lattice_size = lattice_size
         return self

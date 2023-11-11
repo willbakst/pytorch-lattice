@@ -26,6 +26,7 @@ mypy = "^1.6.1"
 pytest = "^7.4.0"
 ruff = "^0.1.5"
 pandas-stubs = "^2.1.1.230928"
+types-tqdm = "^4.66.0.4"
 
 [tool.ruff]
 exclude = [

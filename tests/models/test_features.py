@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 
 from pytorch_lattice import InputKeypointsInit, Monotonicity
-from pytorch_lattice.models import CategoricalFeature, NumericalFeature
+from pytorch_lattice.models.features import CategoricalFeature, NumericalFeature
 
 
 @pytest.mark.parametrize(

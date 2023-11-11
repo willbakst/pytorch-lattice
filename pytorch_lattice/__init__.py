@@ -5,7 +5,7 @@
 # current release. Use Semantic Versioning.
 __version__ = "0.0.0"
 
-from . import configs, datasets, utils
+from . import datasets, utils
 from .classifier import Classifier
 from .enums import (
     CategoricalCalibratorInit,
@@ -16,3 +16,5 @@ from .enums import (
     Monotonicity,
     NumericalCalibratorInit,
 )
+from .feature_config import FeatureConfig
+from .model_configs import LatticeConfig, LinearConfig
