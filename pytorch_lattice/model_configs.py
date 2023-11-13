@@ -48,4 +48,4 @@ class LatticeConfig(_BaseModelConfig):
     """
 
     kernel_init: LatticeInit = LatticeInit.LINEAR
-    interpolation: Interpolation = Interpolation.HYPERCUBE
+    interpolation: Interpolation = Interpolation.SIMPLEX
