@@ -1,4 +1,5 @@
 """Utility functions and classes for handling data."""
+import logging
 from typing import Union
 
 import numpy as np
@@ -13,11 +14,15 @@ def prepare_features(
 ):
     """Maps categorical features to their integer indices in place."""
     for feature in features:
+        feature_data = X[feature.feature_name]
+
         if isinstance(feature, CategoricalFeature):
-            feature_data = X[feature.feature_name].map(feature.category_indices)
-            if feature.missing_input_value is not None:
-                feature_data = feature_data.fillna(feature.missing_input_value)
-            X[feature.feature_name] = feature_data
+            feature_data = feature_data.map(feature.category_indices)
+
+        if feature.missing_input_value is not None:
+            feature_data = feature_data.fillna(feature.missing_input_value)
+
+        X[feature.feature_name] = feature_data
 
 
 class Dataset(torch.utils.data.Dataset):

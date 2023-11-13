@@ -4,7 +4,40 @@ import pandas as pd
 import pytest
 
 from pytorch_lattice.models.features import CategoricalFeature, NumericalFeature
-from pytorch_lattice.utils.data import Dataset
+from pytorch_lattice.utils.data import Dataset, prepare_features
+
+
+@pytest.mark.parametrize(
+    "X,features,expected_prepared_X",
+    [
+        (
+            pd.DataFrame({"a": [1.0, 2.0, 3.0]}),
+            [NumericalFeature(feature_name="a", data=[1.0, 2.0, 3.0])],
+            pd.DataFrame({"a": [1.0, 2.0, 3.0]}),
+        ),
+        (
+            pd.DataFrame({"b": ["a", "b", "c"]}),
+            [CategoricalFeature(feature_name="b", categories=["a", "b", "c"])],
+            pd.DataFrame({"b": [0, 1, 2]}),
+        ),
+        (
+            pd.DataFrame({"a": [1.0, 2.0, 3.0, np.nan], "b": ["a", "b", "c", np.nan]}),
+            [
+                NumericalFeature(
+                    feature_name="a", data=[1.0, 2.0, 3.0], missing_input_value=-1.0
+                ),
+                CategoricalFeature(
+                    feature_name="b", categories=["a", "b"], missing_input_value=-1.0
+                ),
+            ],
+            pd.DataFrame({"a": [1.0, 2.0, 3.0, -1.0], "b": [0.0, 1.0, -1.0, -1.0]}),
+        ),
+    ],
+)
+def test_prepare_features(X, features, expected_prepared_X):
+    """Tests that the `prepare_features` function works as expected."""
+    prepare_features(X, features)
+    assert X.equals(expected_prepared_X)
 
 
 @pytest.fixture(name="X")
@@ -29,11 +62,6 @@ def fixture_dataset(X, features):
     """Returns a `Dataset` fixture for testing."""
     y = np.array([1.0, 2.0, 3.0])
     return Dataset(X, y, features)
-
-
-def test_prepare_features(X, features):
-    """Tests that the `prepare_features` function works as expected."""
-    raise NotImplementedError()
 
 
 def test_initialization(dataset):
