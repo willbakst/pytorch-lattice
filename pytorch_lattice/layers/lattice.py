@@ -218,10 +218,7 @@ class Lattice(ConstrainedModule):
         if monotonicities is None:
             monotonicities = [None] * len(self.lattice_sizes)
 
-        print(f"MONOTONICITIES: {monotonicities}")
         num_constraint_dims = self._count_non_zeros(monotonicities)
-
-        print(f"NUM CONSTRAINTS DIM: {num_constraint_dims}")
         if num_constraint_dims == 0:
             monotonicities = [Monotonicity.INCREASING] * len(self.lattice_sizes)
             num_constraint_dims = len(self.lattice_sizes)
