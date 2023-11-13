@@ -1,5 +1,4 @@
 """Utility functions and classes for handling data."""
-import logging
 from typing import Union
 
 import numpy as np
