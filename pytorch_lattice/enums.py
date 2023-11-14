@@ -67,7 +67,6 @@ class CategoricalCalibratorInit(_Enum):
 class Monotonicity(_Enum):
     """Type of monotonicity constraint.
 
-    - NONE: no monotonicity constraint.
     - INCREASING: increasing monotonicity i.e. increasing input increases output.
     - DECREASING: decreasing monotonicity i.e. increasing input decreases output.
     """

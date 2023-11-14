@@ -15,10 +15,10 @@ from pytorch_lattice.layers import RTL, Lattice
     [
         (
             [
-                Monotonicity.NONE,
-                Monotonicity.NONE,
-                Monotonicity.NONE,
-                Monotonicity.NONE,
+                None,
+                None,
+                None,
+                None,
             ],
             3,
             3,
@@ -33,8 +33,8 @@ from pytorch_lattice.layers import RTL, Lattice
             [
                 Monotonicity.INCREASING,
                 Monotonicity.INCREASING,
-                Monotonicity.NONE,
-                Monotonicity.NONE,
+                None,
+                None,
             ],
             3,
             3,
@@ -46,7 +46,7 @@ from pytorch_lattice.layers import RTL, Lattice
             False,
         ),
         (
-            [Monotonicity.INCREASING, Monotonicity.NONE] * 25,
+            [Monotonicity.INCREASING, None] * 25,
             20,
             5,
             None,
@@ -101,10 +101,7 @@ def test_initialization(
                         == Monotonicity.INCREASING
                     )
                 else:
-                    assert (
-                        rtl.monotonicities[single_lattice_indices[i]]
-                        == Monotonicity.NONE
-                    )
+                    assert rtl.monotonicities[single_lattice_indices[i]] == None
 
         assert len(lattice.monotonicities) == len(lattice.lattice_sizes)
         assert (
@@ -126,7 +123,7 @@ def test_initialization(
 @pytest.mark.parametrize(
     "monotonicities, num_lattices, lattice_rank",
     [
-        ([Monotonicity.NONE] * 9, 2, 2),
+        ([None] * 9, 2, 2),
         ([Monotonicity.INCREASING] * 10, 3, 3),
     ],
 )
@@ -213,8 +210,7 @@ def test_forward(
 ):
     """Tests forward function of RTL Lattice."""
     rtl = RTL(
-        monotonicities=[Monotonicity.NONE, Monotonicity.INCREASING]
-        * (num_features // 2),
+        monotonicities=[None, Monotonicity.INCREASING] * (num_features // 2),
         num_lattices=num_lattices,
         lattice_rank=lattice_rank,
     )
@@ -265,14 +261,14 @@ def test_forward(
         (
             [0, 1, 2, 3],
             [2, 1, 1, 1],
-            [Monotonicity.NONE] * 2 + [Monotonicity.INCREASING] * 3,
+            [None] * 2 + [Monotonicity.INCREASING] * 3,
         ),
         (
             [0, 4, 5, 7],
             [1, 2, 3, 4],
-            [Monotonicity.NONE] + [Monotonicity.INCREASING] * 9,
+            [None] + [Monotonicity.INCREASING] * 9,
         ),
-        ([0], [3], [Monotonicity.NONE] * 3),
+        ([0], [3], [None] * 3),
         ([1, 2, 3], [1, 1, 1], [Monotonicity.INCREASING] * 3),
     ],
 )
@@ -283,7 +279,7 @@ def test_output_monotonicities(
 ):
     """Tests output_monotonicities function."""
     rtl = RTL(
-        monotonicities=[Monotonicity.NONE, Monotonicity.INCREASING],
+        monotonicities=[None, Monotonicity.INCREASING],
         num_lattices=3,
         lattice_rank=3,
     )
@@ -297,7 +293,7 @@ def test_output_monotonicities(
 def test_constrain():
     """Tests RTL constrain function."""
     rtl = RTL(
-        monotonicities=[Monotonicity.NONE, Monotonicity.INCREASING],
+        monotonicities=[None, Monotonicity.INCREASING],
         num_lattices=3,
         lattice_rank=3,
     )
@@ -315,7 +311,7 @@ def test_constrain():
 def test_assert_constraints():
     """Tests RTL assert_constraints function."""
     rtl = RTL(
-        monotonicities=[Monotonicity.NONE, Monotonicity.INCREASING],
+        monotonicities=[None, Monotonicity.INCREASING],
         num_lattices=3,
         lattice_rank=3,
     )

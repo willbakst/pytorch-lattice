@@ -68,8 +68,8 @@ class RTL(torch.nn.Module):
         """Initializes an instance of 'RTL'.
 
         Args:
-            monotonicities: `List` of Monotonicity.INCREASING or Monotonicity.NONE
-             indicating monotonicities of input features, ordered respectively.
+            monotonicities: `List` of `Monotonicity.INCREASING` or `None`
+              indicating monotonicities of input features, ordered respectively.
             num_lattices: number of lattices in RTL structure.
             lattice_rank: number of inputs for each lattice in RTL structure.
             output_min: Minimum output of each lattice in RTL.
@@ -126,7 +126,7 @@ class RTL(torch.nn.Module):
             for i, lattice_indices in enumerate(groups):
                 sorted_indices = sorted(
                     lattice_indices,
-                    key=lambda x: (self.monotonicities[x] != "increasing"),
+                    key=lambda x: (self.monotonicities[x] is None),
                     reverse=False,
                 )
                 groups[i] = sorted_indices
@@ -140,7 +140,7 @@ class RTL(torch.nn.Module):
                     output_max=self.output_max,
                     kernel_init=self.kernel_init,
                     monotonicities=[Monotonicity.INCREASING] * monotonic_count
-                    + [Monotonicity.NONE] * (lattice_rank - monotonic_count),
+                    + [None] * (lattice_rank - monotonic_count),
                     clip_inputs=self.clip_inputs,
                     interpolation=self.interpolation,
                     units=len(groups),
@@ -187,7 +187,7 @@ class RTL(torch.nn.Module):
             if monotonic_count:
                 monotonicity = Monotonicity.INCREASING
             else:
-                monotonicity = Monotonicity.NONE
+                monotonicity = None
             for _ in range(lattice.units):
                 monotonicities.append(monotonicity)
 
