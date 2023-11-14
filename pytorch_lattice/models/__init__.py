@@ -6,4 +6,3 @@ config to the corresponding calibrated model.
 """
 from .calibrated_lattice import CalibratedLattice
 from .calibrated_linear import CalibratedLinear
-from .features import CategoricalFeature, NumericalFeature

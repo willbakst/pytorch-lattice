@@ -1,4 +1,4 @@
-"""Tests for util functions for calibrated models."""
+"""Tests for models utilities."""
 from unittest.mock import Mock
 
 import numpy as np
@@ -11,7 +11,7 @@ from pytorch_lattice import (
     NumericalCalibratorInit,
 )
 from pytorch_lattice.models.features import CategoricalFeature, NumericalFeature
-from pytorch_lattice.models.model_utils import (
+from pytorch_lattice.utils.models import (
     calibrate_and_stack,
     initialize_feature_calibrators,
     initialize_monotonicities,
@@ -26,7 +26,7 @@ from pytorch_lattice.models.model_utils import (
             NumericalFeature(
                 feature_name="numerical_feature",
                 data=np.array([1.0, 2.0, 3.0, 4.0, 5.0]),
-                monotonicity=Monotonicity.NONE,
+                monotonicity=None,
             ),
             CategoricalFeature(
                 feature_name="categorical_feature",
@@ -127,21 +127,21 @@ def test_initialize_feature_calibrators_invalid() -> None:
                 NumericalFeature(
                     feature_name="n",
                     data=np.array([1.0]),
-                    monotonicity=Monotonicity.NONE,
+                    monotonicity=None,
                 ),
                 CategoricalFeature(
                     feature_name="c",
                     categories=["a", "b"],
                 ),
             ],
-            [Monotonicity.NONE, Monotonicity.NONE],
+            [None, None],
         ),
         (
             [
                 NumericalFeature(
                     feature_name="n",
                     data=np.array([1.0]),
-                    monotonicity=Monotonicity.NONE,
+                    monotonicity=None,
                 ),
                 CategoricalFeature(
                     feature_name="c",
@@ -149,7 +149,7 @@ def test_initialize_feature_calibrators_invalid() -> None:
                     monotonicity_pairs=[("a", "b")],
                 ),
             ],
-            [Monotonicity.NONE, Monotonicity.INCREASING],
+            [None, Monotonicity.INCREASING],
         ),
         (
             [
@@ -163,7 +163,7 @@ def test_initialize_feature_calibrators_invalid() -> None:
                     categories=["a", "b"],
                 ),
             ],
-            [Monotonicity.INCREASING, Monotonicity.NONE],
+            [Monotonicity.INCREASING, None],
         ),
         (
             [
@@ -234,7 +234,7 @@ def test_initialize_output_calibrator(
     if monotonic:
         assert output_cal.monotonicity == Monotonicity.INCREASING
     else:
-        assert output_cal.monotonicity == Monotonicity.NONE
+        assert output_cal.monotonicity is None
 
 
 @pytest.mark.parametrize(

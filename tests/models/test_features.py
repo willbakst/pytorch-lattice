@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 
 from pytorch_lattice import InputKeypointsInit, Monotonicity
-from pytorch_lattice.models import CategoricalFeature, NumericalFeature
+from pytorch_lattice.models.features import CategoricalFeature, NumericalFeature
 
 
 @pytest.mark.parametrize(
@@ -15,7 +15,7 @@ from pytorch_lattice.models import CategoricalFeature, NumericalFeature
             5,
             InputKeypointsInit.QUANTILES,
             None,
-            Monotonicity.NONE,
+            None,
             np.array([1.0, 2.0, 3.0, 4.0, 5.0]),
         ),
         (
@@ -51,7 +51,7 @@ from pytorch_lattice.models import CategoricalFeature, NumericalFeature
             10,
             InputKeypointsInit.QUANTILES,
             None,
-            Monotonicity.NONE,
+            None,
             np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]),
         ),
     ],

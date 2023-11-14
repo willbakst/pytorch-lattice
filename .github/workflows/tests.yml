@@ -1,4 +1,4 @@
-name: Test
+name: tests
 run-name: ${{ github.actor }} is testing the package
 
 on:
@@ -10,7 +10,7 @@ on:
       - main
 
 jobs:
-  release:
+  test:
     runs-on: ubuntu-latest
 
     strategy:

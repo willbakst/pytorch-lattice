@@ -10,7 +10,7 @@ from pytorch_lattice.layers import Lattice, NumericalCalibrator
 from pytorch_lattice.models import CalibratedLattice
 from pytorch_lattice.models.features import CategoricalFeature, NumericalFeature
 
-from ..utils import train_calibrated_module
+from ..testing_utils import train_calibrated_module
 
 
 def test_init_required_args():
@@ -21,7 +21,7 @@ def test_init_required_args():
                 feature_name="numerical_feature",
                 data=np.array([1.0, 2.0, 3.0, 4.0, 5.0]),
                 num_keypoints=5,
-                monotonicity=Monotonicity.NONE,
+                monotonicity=None,
             ),
             CategoricalFeature(
                 feature_name="categorical_feature",
@@ -89,9 +89,9 @@ def test_init_required_args():
             8.0,
             Interpolation.HYPERCUBE,
             5,
-            [Monotonicity.NONE, Monotonicity.NONE],
+            [None, None],
             [4, 4],
-            Monotonicity.NONE,
+            None,
         ),
     ],
 )
@@ -255,7 +255,7 @@ def test_training(interpolation, lattice_dim):
         trained_predictions = calibrated_lattice(training_examples)
         trained_loss = loss_fn(trained_predictions, training_labels)
 
-    # calibrated_lattice.constrain()
+    # calibrated_lattice.apply_constraints()
     assert not calibrated_lattice.assert_constraints()
     assert trained_loss < initial_loss
     assert trained_loss < 0.08
@@ -273,7 +273,7 @@ def test_assert_constraints(
                 feature_name="numerical_feature",
                 data=np.array([1.0, 2.0, 3.0, 4.0, 5.0]),
                 num_keypoints=5,
-                monotonicity=Monotonicity.NONE,
+                monotonicity=None,
             ),
             CategoricalFeature(
                 feature_name="categorical_feature",
@@ -298,17 +298,19 @@ def test_assert_constraints(
     mock_output_assert_constraints.assert_called_once()
 
 
-@patch.object(Lattice, "constrain")
-@patch.object(NumericalCalibrator, "constrain")
-def test_constrain(mock_lattice_constrain, mock_output_calibrator_constrain):
-    """Tests `constrain()` method calls internal constrain functions."""
+@patch.object(Lattice, "apply_constraints")
+@patch.object(NumericalCalibrator, "apply_constraints")
+def test_constrain(
+    mock_lattice_apply_constraints, mock_output_calibrator_apply_constraints
+):
+    """Tests `apply_constraints()` method calls internal constraint functions."""
     calibrated_lattice = CalibratedLattice(
         features=[
             NumericalFeature(
                 feature_name="numerical_feature",
                 data=np.array([1.0, 2.0, 3.0, 4.0, 5.0]),
                 num_keypoints=5,
-                monotonicity=Monotonicity.NONE,
+                monotonicity=None,
             ),
             CategoricalFeature(
                 feature_name="categorical_feature",
@@ -318,15 +320,15 @@ def test_constrain(mock_lattice_constrain, mock_output_calibrator_constrain):
         ],
         output_calibration_num_keypoints=2,
     )
-    mock_constrains = []
+    mock_apply_constraints_fns = []
     for calibrator in calibrated_lattice.calibrators.values():
-        mock_calibrator_constrain = Mock()
-        calibrator.constrain = mock_calibrator_constrain
-        mock_constrains.append(mock_calibrator_constrain)
+        mock_calibrator_apply_constraints = Mock()
+        calibrator.apply_constraints = mock_calibrator_apply_constraints
+        mock_apply_constraints_fns.append(mock_calibrator_apply_constraints)
 
-    calibrated_lattice.constrain()
+    calibrated_lattice.apply_constraints()
 
-    mock_lattice_constrain.assert_called_once()
-    mock_output_calibrator_constrain.assert_called_once()
-    for mock_constrain in mock_constrains:
+    mock_lattice_apply_constraints.assert_called_once()
+    mock_output_calibrator_apply_constraints.assert_called_once()
+    for mock_constrain in mock_apply_constraints_fns:
         mock_constrain.assert_called_once()
