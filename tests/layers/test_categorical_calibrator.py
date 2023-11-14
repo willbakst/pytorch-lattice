@@ -6,7 +6,7 @@ import torch
 from pytorch_lattice.enums import CategoricalCalibratorInit
 from pytorch_lattice.layers import CategoricalCalibrator
 
-from ..utils import train_calibrated_module
+from ..testing_utils import train_calibrated_module
 
 
 @pytest.mark.parametrize(
@@ -191,7 +191,7 @@ def test_constrain_no_constraints():
     calibrator = CategoricalCalibrator(
         3, kernel_init=CategoricalCalibratorInit.CONSTANT
     )
-    calibrator.constrain()
+    calibrator.apply_constraints()
     expected_kernel_data = torch.tensor([[0.0], [0.0], [0.0]]).double()
     assert torch.allclose(calibrator.kernel.data, expected_kernel_data)
 
@@ -207,7 +207,7 @@ def test_constrain_only_output_min(output_min, kernel_data):
     """Tests that constrain properly projects kernel into output_min constraint."""
     calibrator = CategoricalCalibrator(kernel_data.size()[0], output_min=output_min)
     calibrator.kernel.data = kernel_data
-    calibrator.constrain()
+    calibrator.apply_constraints()
     assert torch.all(calibrator.keypoints_outputs() >= output_min)
 
 
@@ -222,7 +222,7 @@ def test_constrain_only_output_max(output_max, kernel_data):
     """Tests that constrain properly projects kernel into output_max constraint."""
     calibrator = CategoricalCalibrator(kernel_data.size()[0], output_max=output_max)
     calibrator.kernel.data = kernel_data
-    calibrator.constrain()
+    calibrator.apply_constraints()
     assert torch.all(calibrator.keypoints_outputs() <= output_max)
 
 
@@ -240,7 +240,7 @@ def test_constrain_bounds(output_min, output_max, kernel_data):
         kernel_data.size()[0], output_min=output_min, output_max=output_max
     )
     calibrator.kernel.data = kernel_data
-    calibrator.constrain()
+    calibrator.apply_constraints()
     keypoints_outputs = calibrator.keypoints_outputs()
     assert torch.all(keypoints_outputs >= output_min)
     assert torch.all(keypoints_outputs <= output_max)
@@ -263,7 +263,7 @@ def test_constrain_monotonicity_pairs(monotonicity_pairs, kernel_data):
         kernel_data.size()[0], monotonicity_pairs=monotonicity_pairs
     )
     calibrator.kernel.data = kernel_data
-    calibrator.constrain()
+    calibrator.apply_constraints()
     keypoints_outputs = calibrator.keypoints_outputs()
     for i, j in monotonicity_pairs:
         assert keypoints_outputs[i] <= keypoints_outputs[j]
@@ -287,7 +287,7 @@ def test_constrain_output_min_with_monotonicity_pairs(
         monotonicity_pairs=monotonicity_pairs,
     )
     calibrator.kernel.data = kernel_data
-    calibrator.constrain()
+    calibrator.apply_constraints()
     keypoints_outputs = calibrator.keypoints_outputs()
     assert torch.all(keypoints_outputs >= output_min)
     for i, j in monotonicity_pairs:
@@ -312,7 +312,7 @@ def test_constrain_output_max_with_monotonicity_pairs(
         monotonicity_pairs=monotonicity_pairs,
     )
     calibrator.kernel.data = kernel_data
-    calibrator.constrain()
+    calibrator.apply_constraints()
     keypoints_outputs = calibrator.keypoints_outputs()
     assert torch.all(keypoints_outputs <= output_max)
     for i, j in monotonicity_pairs:
@@ -348,7 +348,7 @@ def test_constrain_bounds_with_monotonicity_pairs(
         monotonicity_pairs=monotonicity_pairs,
     )
     calibrator.kernel.data = kernel_data
-    calibrator.constrain()
+    calibrator.apply_constraints()
     keypoints_outputs = calibrator.keypoints_outputs()
     assert torch.all(keypoints_outputs >= output_min)
     assert torch.all(keypoints_outputs <= output_max)

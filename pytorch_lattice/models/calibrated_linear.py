@@ -3,18 +3,18 @@ from typing import Optional, Union
 
 import torch
 
-from ..enums import Monotonicity
+from ..constrained_module import ConstrainedModule
 from ..layers import Linear
-from .features import CategoricalFeature, NumericalFeature
-from .model_utils import (
+from ..utils.models import (
     calibrate_and_stack,
     initialize_feature_calibrators,
     initialize_monotonicities,
     initialize_output_calibrator,
 )
+from .features import CategoricalFeature, NumericalFeature
 
 
-class CalibratedLinear(torch.nn.Module):
+class CalibratedLinear(ConstrainedModule):
     """PyTorch Calibrated Linear Model.
 
     Creates a `torch.nn.Module` representing a calibrated linear model, which will be
@@ -31,23 +31,22 @@ class CalibratedLinear(torch.nn.Module):
     Example:
 
     ```python
-    csv_data = CSVData(...)
-
     feature_configs = [...]
-    calibrated_model = CalibratedLinear(feature_configs, ...)
+    calibrated_model = pyl.models.CalibratedLinear(feature_configs, ...)
 
     loss_fn = torch.nn.MSELoss()
     optimizer = torch.optim.Adam(calibrated_model.parameters(recurse=True), lr=1e-1)
 
-    csv_data.prepare(feature_configs, "target", ...)
+    dataset = pyl.utils.data.Dataset(...)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=64, shuffle=True)
     for epoch in range(100):
-        for examples, targets in csv_data.batch(64):
+        for inputs, labels in dataloader:
             optimizer.zero_grad()
             outputs = calibrated_model(inputs)
             loss = loss_fn(outputs, labels)
             loss.backward()
             optimizer.step()
-            calibrated_model.constrain()
+            calibrated_model.apply_constraints()
     ```
     """
 
@@ -101,7 +100,7 @@ class CalibratedLinear(torch.nn.Module):
 
         self.output_calibrator = initialize_output_calibrator(
             output_calibration_num_keypoints=output_calibration_num_keypoints,
-            monotonic=not all(m == Monotonicity.NONE for m in self.monotonicities),
+            monotonic=not all(m is None for m in self.monotonicities),
             output_min=output_min,
             output_max=output_max,
         )
@@ -123,39 +122,42 @@ class CalibratedLinear(torch.nn.Module):
         return result
 
     @torch.no_grad()
-    def assert_constraints(self) -> dict[str, list[str]]:
+    def apply_constraints(self) -> None:
+        """Constrains the model into desired constraints specified by the config."""
+        for calibrator in self.calibrators.values():
+            calibrator.apply_constraints()
+        self.linear.apply_constraints()
+        if self.output_calibrator:
+            self.output_calibrator.apply_constraints()
+
+    @torch.no_grad()
+    def assert_constraints(self, eps=1e-6) -> Union[list[str], dict[str, list[str]]]:
         """Asserts all layers within model satisfied specified constraints.
 
         Asserts monotonicity pairs and output bounds for categorical calibrators,
         monotonicity and output bounds for numerical calibrators, and monotonicity and
         weights summing to 1 if weighted_average for linear layer.
 
+        Args:
+            eps: the margin of error allowed
+
         Returns:
             A dict where key is feature_name for calibrators and 'linear' for the linear
             layer, and value is the error messages for each layer. Layers with no error
             messages are not present in the dictionary.
         """
-        messages = {}
+        messages: dict[str, list[str]] = {}
 
         for name, calibrator in self.calibrators.items():
-            calibrator_messages = calibrator.assert_constraints()
+            calibrator_messages = calibrator.assert_constraints(eps)
             if calibrator_messages:
                 messages[f"{name}_calibrator"] = calibrator_messages
-        linear_messages = self.linear.assert_constraints()
+        linear_messages = self.linear.assert_constraints(eps)
         if linear_messages:
             messages["linear"] = linear_messages
         if self.output_calibrator:
-            output_calibrator_messages = self.output_calibrator.assert_constraints()
+            output_calibrator_messages = self.output_calibrator.assert_constraints(eps)
             if output_calibrator_messages:
                 messages["output_calibrator"] = output_calibrator_messages
 
         return messages
-
-    @torch.no_grad()
-    def constrain(self) -> None:
-        """Constrains the model into desired constraints specified by the config."""
-        for calibrator in self.calibrators.values():
-            calibrator.constrain()
-        self.linear.constrain()
-        if self.output_calibrator:
-            self.output_calibrator.constrain()

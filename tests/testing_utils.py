@@ -1,10 +1,7 @@
 """Testing Utilities."""
-from typing import Union
-
 import torch
 
-from pytorch_lattice.layers import Linear
-from pytorch_lattice.models import CalibratedLinear
+from pytorch_lattice.constrained_module import ConstrainedModule
 
 
 def _batch_data(examples: torch.Tensor, labels: torch.Tensor, batch_size: int):
@@ -18,7 +15,7 @@ def _batch_data(examples: torch.Tensor, labels: torch.Tensor, batch_size: int):
 
 
 def train_calibrated_module(
-    calibrated_module: Union[Linear, CalibratedLinear],
+    calibrated_module: ConstrainedModule,
     examples: torch.Tensor,
     labels: torch.Tensor,
     loss_fn: torch.nn.Module,
@@ -34,7 +31,7 @@ def train_calibrated_module(
             loss = loss_fn(outputs, batched_labels)
             loss.backward()
             optimizer.step()
-            calibrated_module.constrain()
+            calibrated_module.apply_constraints()
 
 
 class MockResponse:

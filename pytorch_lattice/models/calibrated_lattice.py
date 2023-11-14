@@ -1,24 +1,24 @@
 """Class for easily constructing a calibrated lattice model."""
-from typing import Dict, List, Optional, Union
+from typing import Optional, Union
 
 import torch
 
+from ..constrained_module import ConstrainedModule
 from ..enums import (
     Interpolation,
     LatticeInit,
-    Monotonicity,
 )
 from ..layers import Lattice
-from .features import CategoricalFeature, NumericalFeature
-from .model_utils import (
+from ..utils.models import (
     calibrate_and_stack,
     initialize_feature_calibrators,
     initialize_monotonicities,
     initialize_output_calibrator,
 )
+from .features import CategoricalFeature, NumericalFeature
 
 
-class CalibratedLattice(torch.nn.Module):
+class CalibratedLattice(ConstrainedModule):
     """PyTorch Calibrated Lattice Model.
 
     Creates a `torch.nn.Module` representing a calibrated lattice model, which will be
@@ -35,29 +35,28 @@ class CalibratedLattice(torch.nn.Module):
     Example:
 
     ```python
-    csv_data = CSVData(...)
-
     feature_configs = [...]
     calibrated_model = CalibratedLattice(feature_configs, ...)
 
     loss_fn = torch.nn.MSELoss()
     optimizer = torch.optim.Adam(calibrated_model.parameters(recurse=True), lr=1e-1)
 
-    csv_data.prepare(feature_configs, "target", ...)
+    dataset = pyl.utils.data.Dataset(...)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=64, shuffle=True)
     for epoch in range(100):
-        for examples, targets in csv_data.batch(64):
+        for inputs, labels in dataloader:
             optimizer.zero_grad()
             outputs = calibrated_model(inputs)
             loss = loss_fn(outputs, labels)
             loss.backward()
             optimizer.step()
-            calibrated_model.constrain()
+            calibrated_model.apply_constraints()
     ```
     """
 
     def __init__(
         self,
-        features: List[Union[NumericalFeature, CategoricalFeature]],
+        features: list[Union[NumericalFeature, CategoricalFeature]],
         clip_inputs: bool = True,
         output_min: Optional[float] = None,
         output_max: Optional[float] = None,
@@ -112,7 +111,7 @@ class CalibratedLattice(torch.nn.Module):
 
         self.output_calibrator = initialize_output_calibrator(
             output_calibration_num_keypoints=output_calibration_num_keypoints,
-            monotonic=not all(m == Monotonicity.NONE for m in self.monotonicities),
+            monotonic=not all(m is None for m in self.monotonicities),
             output_min=output_min,
             output_max=output_max,
         )
@@ -134,12 +133,24 @@ class CalibratedLattice(torch.nn.Module):
         return result
 
     @torch.no_grad()
-    def assert_constraints(self) -> Dict[str, List[str]]:
+    def apply_constraints(self) -> None:
+        """Constrains the model into desired constraints specified by the config."""
+        for calibrator in self.calibrators.values():
+            calibrator.apply_constraints()
+        self.lattice.apply_constraints()
+        if self.output_calibrator:
+            self.output_calibrator.apply_constraints()
+
+    @torch.no_grad()
+    def assert_constraints(self, eps=1e-6) -> dict[str, list[str]]:
         """Asserts all layers within model satisfied specified constraints.
 
         Asserts monotonicity pairs and output bounds for categorical calibrators,
         monotonicity and output bounds for numerical calibrators, and monotonicity and
         weights summing to 1 if weighted_average for linear layer.
+
+        Args:
+            eps: the margin of error allowed
 
         Returns:
             A dict where key is feature_name for calibrators and 'linear' for the linear
@@ -149,24 +160,15 @@ class CalibratedLattice(torch.nn.Module):
         messages = {}
 
         for name, calibrator in self.calibrators.items():
-            calibrator_messages = calibrator.assert_constraints()
+            calibrator_messages = calibrator.assert_constraints(eps)
             if calibrator_messages:
                 messages[f"{name}_calibrator"] = calibrator_messages
-        lattice_messages = self.lattice.assert_constraints()
+        lattice_messages = self.lattice.assert_constraints(eps)
         if lattice_messages:
             messages["lattice"] = lattice_messages
         if self.output_calibrator:
-            output_calibrator_messages = self.output_calibrator.assert_constraints()
+            output_calibrator_messages = self.output_calibrator.assert_constraints(eps)
             if output_calibrator_messages:
                 messages["output_calibrator"] = output_calibrator_messages
 
         return messages
-
-    @torch.no_grad()
-    def constrain(self) -> None:
-        """Constrains the model into desired constraints specified by the config."""
-        for calibrator in self.calibrators.values():
-            calibrator.constrain()
-        self.lattice.constrain()
-        if self.output_calibrator:
-            self.output_calibrator.constrain()

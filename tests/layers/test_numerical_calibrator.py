@@ -6,7 +6,7 @@ import torch
 from pytorch_lattice import Monotonicity, NumericalCalibratorInit
 from pytorch_lattice.layers import NumericalCalibrator
 
-from ..utils import train_calibrated_module
+from ..testing_utils import train_calibrated_module
 
 
 @pytest.mark.parametrize(
@@ -18,7 +18,7 @@ from ..utils import train_calibrated_module
             None,
             None,
             None,
-            Monotonicity.NONE,
+            None,
             NumericalCalibratorInit.EQUAL_HEIGHTS,
             10,
             torch.tensor([[[-2.0]] + ([[1.0]] * 4)]).double(),
@@ -187,7 +187,7 @@ def test_forward(input_keypoints, kernel_init, kernel_data, inputs, expected_out
             Monotonicity.DECREASING,
             ["Monotonicity violated at: [(0, 1), (2, 3)]."],
         ),
-        (torch.tensor([[-0.4], [1.0], [-1.0], [0.0]]), Monotonicity.NONE, []),
+        (torch.tensor([[-0.4], [1.0], [-1.0], [0.0]]), None, []),
     ],
 )
 def test_assert_constraints_monotonicity(kernel_data, monotonicity, expected_out):
@@ -222,7 +222,7 @@ def test_assert_constraints_output_bounds(kernel_data, expected_out):
     """Tests assert_constraints for output bounds with a tolerance of eps."""
     calibrator = NumericalCalibrator(np.linspace(1.0, 4.0, num=4))
     calibrator.kernel.data = kernel_data
-    calibrator.monotonicity = Monotonicity.NONE
+    calibrator.monotonicity = None
     calibrator.output_min = 0.0
     calibrator.output_max = 1.0
     assert calibrator.assert_constraints(eps=0.1) == expected_out
@@ -269,7 +269,7 @@ def test_assert_constraints_combo(kernel_data, monotonicity, expected_out):
 def test_constrain_no_constraints():
     """Tests that constrain does nothing when there are no constraints."""
     calibrator = NumericalCalibrator(np.linspace(1.0, 5.0, num=5))
-    calibrator.constrain()
+    calibrator.apply_constraints()
     expected_kernel_data = torch.tensor([[-2.0], [1.0], [1.0], [1.0], [1.0]]).double()
     assert torch.allclose(calibrator.kernel.data, expected_kernel_data)
 
@@ -287,7 +287,7 @@ def test_constrain_only_output_min(output_min, kernel_data):
         np.linspace(1.0, 5.0, num=5), output_min=output_min
     )
     calibrator.kernel.data = kernel_data
-    calibrator.constrain()
+    calibrator.apply_constraints()
     assert torch.all(calibrator.keypoints_outputs() >= output_min)
 
 
@@ -304,7 +304,7 @@ def test_constrain_only_output_max(output_max, kernel_data):
         np.linspace(1.0, 5.0, num=5), output_max=output_max
     )
     calibrator.kernel.data = kernel_data
-    calibrator.constrain()
+    calibrator.apply_constraints()
     assert torch.all(calibrator.keypoints_outputs() <= output_max)
 
 
@@ -325,7 +325,7 @@ def test_constrain_bounds(output_min, output_max, kernel_data):
         np.linspace(1.0, 5.0, num=6), output_min=output_min, output_max=output_max
     )
     calibrator.kernel.data = kernel_data
-    calibrator.constrain()
+    calibrator.apply_constraints()
     keypoints_outputs = calibrator.keypoints_outputs()
     assert torch.all(keypoints_outputs >= output_min)
     assert torch.all(keypoints_outputs <= output_max)
@@ -344,7 +344,7 @@ def test_constrain_increasing_monotonicity(kernel_data):
         np.linspace(1.0, 5.0, num=5), monotonicity=Monotonicity.INCREASING
     )
     calibrator.kernel.data = kernel_data
-    calibrator.constrain()
+    calibrator.apply_constraints()
     heights = calibrator.kernel.data[1:]
     assert torch.all(heights >= 0)
 
@@ -362,7 +362,7 @@ def test_constrain_decreasing_monotonicity(kernel_data):
         np.linspace(1.0, 5.0, num=4), monotonicity=Monotonicity.DECREASING
     )
     calibrator.kernel.data = kernel_data
-    calibrator.constrain()
+    calibrator.apply_constraints()
     heights = calibrator.kernel.data[1:]
     assert torch.all(heights <= 0)
 
@@ -400,7 +400,7 @@ def test_constrain_output_min_monotonicity(output_min, monotonicity, kernel_data
         monotonicity=monotonicity,
     )
     calibrator.kernel.data = kernel_data
-    calibrator.constrain()
+    calibrator.apply_constraints()
     keypoints_outputs = calibrator.keypoints_outputs()
     assert torch.all(keypoints_outputs >= output_min)
     heights = calibrator.kernel.data[1:]
@@ -443,7 +443,7 @@ def test_constrain_output_max_with_monotonicity(output_max, monotonicity, kernel
         monotonicity=monotonicity,
     )
     calibrator.kernel.data = kernel_data
-    calibrator.constrain()
+    calibrator.apply_constraints()
     keypoints_outputs = calibrator.keypoints_outputs()
     assert torch.all(keypoints_outputs <= output_max)
     heights = calibrator.kernel.data[1:]
@@ -481,7 +481,7 @@ def test_constrain_bounds_with_monotonicity(
         monotonicity=monotonicity,
     )
     calibrator.kernel.data = kernel_data
-    calibrator.constrain()
+    calibrator.apply_constraints()
     keypoints_outputs = calibrator.keypoints_outputs()
     assert torch.all(keypoints_outputs >= output_min)
     assert torch.all(keypoints_outputs <= output_max)
@@ -702,7 +702,7 @@ def test_approximately_project_bounds_only(
         np.linspace(1.0, 4.0, num=4),
         output_min=output_min,
         output_max=output_max,
-        monotonicity=Monotonicity.NONE,
+        monotonicity=None,
     )
     bias, heights = kernel_data[0:1], kernel_data[1:]
     (
@@ -818,7 +818,7 @@ def test_training():
         np.linspace(-2.0, 2.0, num=21),
         output_min=output_min,
         output_max=output_max,
-        monotonicity=Monotonicity.NONE,
+        monotonicity=None,
     )
 
     loss_fn = torch.nn.MSELoss()

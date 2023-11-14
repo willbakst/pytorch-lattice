@@ -1,4 +1,4 @@
-"""Common utilities for constructing calibrated models."""
+"""Utility functions for use in model classes."""
 from typing import Optional, Union
 
 import numpy as np
@@ -11,7 +11,7 @@ from ..enums import (
 )
 from ..layers.categorical_calibrator import CategoricalCalibrator
 from ..layers.numerical_calibrator import NumericalCalibrator
-from .features import CategoricalFeature, NumericalFeature
+from ..models.features import CategoricalFeature, NumericalFeature
 
 
 def initialize_feature_calibrators(
@@ -65,23 +65,20 @@ def initialize_feature_calibrators(
 
 def initialize_monotonicities(
     features: list[Union[NumericalFeature, CategoricalFeature]]
-) -> list[Monotonicity]:
+) -> list[Optional[Monotonicity]]:
     """Helper function to initialize monotonicities for calibrated model.
 
     Args:
         features: A list of numerical and/or categorical feature configs.
 
     Returns:
-        A list of `Monotonicity.NONE` or `Monotonicity.INCREASING` based on whether
+        A list of `None` or `Monotonicity.INCREASING` based on whether
         each feature has a monotonicity or not.
     """
     monotonicities = [
-        Monotonicity.NONE
+        None
         if (isinstance(feature, CategoricalFeature) and not feature.monotonicity_pairs)
-        or (
-            isinstance(feature, NumericalFeature)
-            and feature.monotonicity == Monotonicity.NONE
-        )
+        or (isinstance(feature, NumericalFeature) and feature.monotonicity is None)
         else Monotonicity.INCREASING
         for feature in features
     ]
@@ -117,7 +114,7 @@ def initialize_output_calibrator(
             missing_input_value=None,
             output_min=output_min,
             output_max=output_max,
-            monotonicity=Monotonicity.INCREASING if monotonic else Monotonicity.NONE,
+            monotonicity=Monotonicity.INCREASING if monotonic else None,
             kernel_init=NumericalCalibratorInit.EQUAL_HEIGHTS,
         )
         return output_calibrator

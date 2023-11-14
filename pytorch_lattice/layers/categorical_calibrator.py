@@ -10,10 +10,11 @@ from typing import Optional
 import torch
 from graphlib import CycleError, TopologicalSorter
 
+from ..constrained_module import ConstrainedModule
 from ..enums import CategoricalCalibratorInit
 
 
-class CategoricalCalibrator(torch.nn.Module):
+class CategoricalCalibrator(ConstrainedModule):
     """A categorical calibrator.
 
     This module takes an input of shape `(batch_size, 1)` and calibrates it by mapping a
@@ -135,6 +136,24 @@ class CategoricalCalibrator(torch.nn.Module):
         return torch.mm(one_hot, self.kernel)
 
     @torch.no_grad()
+    def apply_constraints(self) -> None:
+        """Projects kernel into desired constraints."""
+        projected_kernel_data = self.kernel.data
+        if self.monotonicity_pairs:
+            projected_kernel_data = self._approximately_project_monotonicity_pairs(
+                projected_kernel_data
+            )
+        if self.output_min is not None:
+            projected_kernel_data = torch.maximum(
+                projected_kernel_data, torch.tensor(self.output_min)
+            )
+        if self.output_max is not None:
+            projected_kernel_data = torch.minimum(
+                projected_kernel_data, torch.tensor(self.output_max)
+            )
+        self.kernel.data = projected_kernel_data
+
+    @torch.no_grad()
     def assert_constraints(self, eps=1e-6) -> list[str]:
         """Asserts that layer satisfies specified constraints.
 
@@ -166,24 +185,6 @@ class CategoricalCalibrator(torch.nn.Module):
                 messages.append(f"Monotonicity violated at: {str(violation_indices)}.")
 
         return messages
-
-    @torch.no_grad()
-    def constrain(self) -> None:
-        """Projects kernel into desired constraints."""
-        projected_kernel_data = self.kernel.data
-        if self.monotonicity_pairs:
-            projected_kernel_data = self._approximately_project_monotonicity_pairs(
-                projected_kernel_data
-            )
-        if self.output_min is not None:
-            projected_kernel_data = torch.maximum(
-                projected_kernel_data, torch.tensor(self.output_min)
-            )
-        if self.output_max is not None:
-            projected_kernel_data = torch.minimum(
-                projected_kernel_data, torch.tensor(self.output_max)
-            )
-        self.kernel.data = projected_kernel_data
 
     @torch.no_grad()
     def keypoints_inputs(self) -> torch.Tensor:
