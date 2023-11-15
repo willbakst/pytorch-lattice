@@ -79,7 +79,6 @@ nav:
       - Why use PyTorch Lattice: "WHY.md"
       - Contributing: "CONTRIBUTING.md"
       - How to help: "HELP.md"
-      - Changelog: "CHANGELOG.md"
   - Concepts:
       - Classifier: "concepts/classifier.md"
       - Calibrators: "concepts/calibrators.md"
