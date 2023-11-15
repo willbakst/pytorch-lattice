@@ -13,30 +13,30 @@ from ..enums import Monotonicity
 
 
 class Linear(ConstrainedModule):
-    """A linear module.
+    """A constrained linear module.
 
     This module takes an input of shape `(batch_size, input_dim)` and applied a linear
     transformation. The output will have the same shape as the input.
 
     Attributes:
-      - All `__init__` arguments.
-      kernel: `torch.nn.Parameter` that stores the linear combination weighting.
-      bias: `torch.nn.Parameter` that stores the bias term. Only available is `use_bias`
-        is true.
+        All: `__init__` arguments.
+        kernel: `torch.nn.Parameter` that stores the linear combination weighting.
+        bias: `torch.nn.Parameter` that stores the bias term. Only available is
+            `use_bias` is true.
 
     Example:
     ```python
     input_dim = 3
     inputs = torch.tensor(...)  # shape: (batch_size, input_dim)
     linear = Linear(
-      input_dim,
-      monotonicities=[
-        None,
-        Monotonicity.INCREASING,
-        Monotonicity.DECREASING
-      ],
-      use_bias=False,
-      weighted_average=True,
+        input_dim,
+        monotonicities=[
+            None,
+            Monotonicity.INCREASING,
+            Monotonicity.DECREASING
+        ],
+        use_bias=False,
+        weighted_average=True,
     )
     outputs = linear(inputs)
     ```
@@ -44,7 +44,7 @@ class Linear(ConstrainedModule):
 
     def __init__(
         self,
-        input_dim,
+        input_dim: int,
         monotonicities: Optional[list[Optional[Monotonicity]]] = None,
         use_bias: bool = True,
         weighted_average: bool = False,
@@ -54,13 +54,13 @@ class Linear(ConstrainedModule):
         Args:
             input_dim: The number of inputs that will be combined.
             monotonicities: If provided, specifies the monotonicity of each input
-              dimension.
+                dimension.
             use_bias: Whether to use a bias term for the linear combination.
             weighted_average: Whether to make the output a weighted average i.e. all
-              coefficients are positive and add up to a total of 1.0. No bias term will
-              be used, and `use_bias` will be set to false regardless of the original
-              value. `monotonicities` will also be set to increasing for all input
-              dimensions to ensure that all coefficients are positive.
+                coefficients are positive and add up to a total of 1.0. No bias term
+                will be used, and `use_bias` will be set to false regardless of the
+                original value. `monotonicities` will also be set to increasing for all
+                input dimensions to ensure that all coefficients are positive.
 
         Raises:
             ValueError: If monotonicities does not have length input_dim (if provided).
@@ -133,7 +133,7 @@ class Linear(ConstrainedModule):
         self.kernel.data = projected_kernel_data
 
     @torch.no_grad()
-    def assert_constraints(self, eps=1e-6) -> list[str]:
+    def assert_constraints(self, eps: float = 1e-6) -> list[str]:
         """Asserts that layer satisfies specified constraints.
 
         This checks that decreasing monotonicity corresponds to negative weights,

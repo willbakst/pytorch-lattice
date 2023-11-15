@@ -22,7 +22,7 @@ class NumericalFeature:
     """Feature configuration for numerical features.
 
     Attributes:
-        - All `__init__` arguments.
+        All: `__init__` arguments.
         input_keypoints: The input keypoints used for this feature's calibrator. These
             keypoints will be initialized using the given `data` under the desired
             `input_keypoints_init` scheme.
@@ -105,7 +105,7 @@ class CategoricalFeature:
     """Feature configuration for categorical features.
 
     Attributes:
-        - All `__init__` arguments.
+        All: `__init__` arguments.
         category_indices: A dictionary mapping string categories to their index.
         monotonicity_index_pairs: A conversion of `monotonicity_pairs` from string
             categories to category indices. Only available if `monotonicity_pairs` are
@@ -133,8 +133,8 @@ class CategoricalFeature:
             monotonicity_pairs: List of pairs of categories `(category_a, category_b)`
                 indicating that the calibrator output for `category_b` should be greater
                 than or equal to that of `category_a`.
-            lattice_size: The default number of keypoints outputted by the
-            calibrator. Only used within `Lattice` models.
+            lattice_size: The default number of keypoints outputted by the calibrator.
+                Only used within `Lattice` models.
         """
         self.feature_name = feature_name
         self.categories = categories

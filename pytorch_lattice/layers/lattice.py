@@ -21,22 +21,23 @@ class Lattice(ConstrainedModule):
     weight, and input is considered to be a d-dimensional point within the lattice.
 
     Attributes:
-      - All `__init__` arguments.
-      kernel: `torch.nn.Parameter` of shape `(prod(lattice_sizes), units)` which stores
-        weights at each vertex of lattice.
+        All: `__init__` arguments.
+        kernel: `torch.nn.Parameter` of shape `(prod(lattice_sizes), units)` which
+            stores
+            weights at each vertex of lattice.
 
     Example:
-    `python
+    ```python
     lattice_sizes = [2, 2, 4, 3]
     inputs=torch.tensor(...) # shape: (batch_size, len(lattice_sizes))
     lattice=Lattice(
-      lattice_sizes,
-      clip_inputs=True,
-      interpolation=Interpolation.HYPERCUBE,
-      units=1,
+        lattice_sizes,
+        clip_inputs=True,
+        interpolation=Interpolation.HYPERCUBE,
+        units=1,
     )
     outputs = Lattice(inputs)
-    `
+    ```
     """
 
     def __init__(
@@ -58,10 +59,10 @@ class Lattice(ConstrainedModule):
             output_max: Maximum output value for weights at vertices of lattice.
             kernel_init: Initialization scheme to use for the kernel.
             monotonicities: `None` or list of `NONE` or
-              `Monotonicity.INCREASING` of length `len(lattice_sizes)` specifying
-              monotonicity of each feature of lattice. A monotonically decreasing
-              feature should use `Monotonicity.INCREASING` in the lattice layer but
-              `Monotonicity.DECREASING` in the calibrator.
+                `Monotonicity.INCREASING` of length `len(lattice_sizes)` specifying
+                monotonicity of each feature of lattice. A monotonically decreasing
+                 feature should use `Monotonicity.INCREASING` in the lattice layer but
+                `Monotonicity.DECREASING` in the calibrator.
             clip_inputs: Whether input points should be clipped to the range of lattice.
             interpolation: Interpolation scheme for a given input.
             units: Dimensionality of weights stored at each vertex of lattice.
@@ -112,10 +113,10 @@ class Lattice(ConstrainedModule):
 
         Args:
             x: input tensor. If `units == 1`, tensor of shape:
-              `(batch_size, ..., len(lattice_size))` or list of `len(lattice_sizes)`
-              tensors of same shape: `(batch_size, ..., 1)`. If `units > 1`, tensor of
-              shape `(batch_size, ..., units, len(lattice_sizes))` or list of
-              `len(lattice_sizes)` tensors of same shape `(batch_size, ..., units, 1)`.
+                `(batch_size, ..., len(lattice_size))` or list of `len(lattice_sizes)`
+                tensors of same shape: `(batch_size, ..., 1)`. If `units > 1`, tensor of
+                shape `(batch_size, ..., units, len(lattice_sizes))` or list of
+                `len(lattice_sizes)` tensors OF same shape `(batch_size, ..., units, 1)`
 
         Returns:
             torch.Tensor of shape `(batch_size, ..., units)` containing interpolated
@@ -157,7 +158,7 @@ class Lattice(ConstrainedModule):
         self.kernel.data = weights.view(-1, self.units)
 
     @torch.no_grad()
-    def assert_constraints(self, eps=1e-6) -> list[str]:
+    def assert_constraints(self, eps: float = 1e-6) -> list[str]:
         """Asserts that layer satisfies specified constraints.
 
         This checks that weights follow monotonicity and bounds constraints.
@@ -208,7 +209,7 @@ class Lattice(ConstrainedModule):
 
         Args:
             monotonicities: monotonicity constraints of lattice, enforced in
-              initialization.
+                initialization.
 
         Returns:
             `torch.Tensor` of shape `(prod(lattice_sizes), units)`
@@ -285,10 +286,10 @@ class Lattice(ConstrainedModule):
 
         Args:
             inputs: input tensor. If `units == 1`, tensor of shape:
-              `(batch_size, ..., len(lattice_size))` or list of `len(lattice_sizes)`
-              tensors of same shape: `(batch_size, ..., 1)`. If `units > 1`, tensor of
-              shape `(batch_size, ..., units, len(lattice_sizes))` or list of
-              `len(lattice_sizes)` tensors of same shape `(batch_size, ..., units, 1)`
+                `(batch_size, ..., len(lattice_size))` or list of `len(lattice_sizes)`
+                tensors of same shape: `(batch_size, ..., 1)`. If `units > 1`, tensor of
+                shape `(batch_size, ..., units, len(lattice_sizes))` or list of
+                `len(lattice_sizes)` tensors of same shape `(batch_size, ..., units, 1)`
 
         Returns:
             `torch.Tensor` of shape `(batch_size, ..., units)` containing interpolated
@@ -377,10 +378,10 @@ class Lattice(ConstrainedModule):
 
         Args:
             inputs: input tensor. If `units == 1`, tensor of shape:
-              `(batch_size, ..., len(lattice_size))` or list of `len(lattice_sizes)`
-              tensors of same shape: `(batch_size, ..., 1)`. If `units > 1`, tensor of
-              shape `(batch_size, ..., units, len(lattice_sizes))` or list of
-              `len(lattice_sizes)` tensors of same shape `(batch_size, ..., units, 1)`
+                `(batch_size, ..., len(lattice_size))` or list of `len(lattice_sizes)`
+                tensors of same shape: `(batch_size, ..., 1)`. If `units > 1`, tensor of
+                shape `(batch_size, ..., units, len(lattice_sizes))` or list of
+                `len(lattice_sizes)` tensors of same shape `(batch_size, ..., units, 1)`
 
         Returns:
             `torch.Tensor` of shape `(batch_size, ..., units)` containing interpolated
@@ -410,9 +411,9 @@ class Lattice(ConstrainedModule):
 
         Args:
             inputs: torch.Tensor of shape `(batch_size, ..., len(lattice_sizes)` or list
-              of `len(lattice_sizes)` tensors of same shape `(batch_size, ..., 1)`
+                of `len(lattice_sizes)` tensors of same shape `(batch_size, ..., 1)`
             clip_inputs: Boolean to determine whether input values outside lattice
-              bounds should be clipped to the min or max supported values.
+                bounds should be clipped to the min or max supported values.
 
         Returns:
             `torch.Tensor` of shape `(batch_size, ..., prod(lattice_sizes))` containing
@@ -469,7 +470,7 @@ class Lattice(ConstrainedModule):
 
         Args:
             list_of_tensors: List of tensors of same shape `(batch_size, ..., k[i])`
-              where everything except `k_i` matches.
+                where everything except `k_i` matches.
             operation: A torch operation which supports broadcasting to be applied. If
                 `None` is provided, this will apply `torch.mul` for the first several
                 tensors and `torch.matmul` for the remaining tensors.
@@ -609,12 +610,13 @@ class Lattice(ConstrainedModule):
 
         Args:
             weights: `torch.Tensor` of kernel data reshaped into `(lattice_sizes)` if
-              `units == 1` or `(lattice_sizes, units)` if `units > 1`.
+                `units == 1` or `(lattice_sizes, units)` if `units > 1`.
             lattice_sizes: List of size of each dimension of lattice, but for
-              `units > 1`, `units` is appended to the end for computation purposes.
+                `units > 1`, `units` is appended to the end for computation purposes.
             monotonicities: List of `None` or `Monotonicity.INCREASING`
-              of length `len(lattice_sizes)` for `units == 1` or `len(lattice_sizes)+1`
-              if `units > 1` specifying monotonicity of each feature of lattice.
+                of length `len(lattice_sizes)` for `units == 1` or
+                `len(lattice_sizes)+1` if `units > 1` specifying monotonicity of each
+                feature of lattice.
 
         Returns:
             `torch.Tensor` of shape `self.kernel` with updated weights which meet

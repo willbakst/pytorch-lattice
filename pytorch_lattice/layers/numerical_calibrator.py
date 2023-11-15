@@ -22,7 +22,7 @@ class NumericalCalibrator(ConstrainedModule):
     will have the same shape as the input.
 
     Attributes:
-        - All `__init__` arguments.
+        All: `__init__` arguments.
         kernel: `torch.nn.Parameter` that stores the piece-wise linear function weights.
         missing_output: `torch.nn.Parameter` that stores the output learned for any
             missing inputs. Only available if `missing_input_value` is provided.
@@ -65,7 +65,7 @@ class NumericalCalibrator(ConstrainedModule):
             monotonicity: Monotonicity constraint for the underlying piece-wise linear
                 function.
             kernel_init: Initialization scheme to use for the kernel.
-            projectionion_iterations: Number of times to run Dykstra's projection
+            projection_iterations: Number of times to run Dykstra's projection
                 algorithm when applying constraints.
 
         Raises:
@@ -232,7 +232,7 @@ class NumericalCalibrator(ConstrainedModule):
         self.kernel.data = torch.cat((projected_bias, projected_heights), 0)
 
     @torch.no_grad()
-    def assert_constraints(self, eps=1e-6) -> list[str]:
+    def assert_constraints(self, eps: float = 1e-6) -> list[str]:
         """Asserts that layer satisfies specified constraints.
 
         This checks that weights follow monotonicity constraints and that the output is

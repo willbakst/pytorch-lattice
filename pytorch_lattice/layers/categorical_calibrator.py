@@ -22,7 +22,7 @@ class CategoricalCalibrator(ConstrainedModule):
     the input.
 
     Attributes:
-        - All `__init__` arguments.
+        All: `__init__` arguments.
         kernel: `torch.nn.Parameter` that stores the categorical mapping weights.
 
     Example:
@@ -154,7 +154,7 @@ class CategoricalCalibrator(ConstrainedModule):
         self.kernel.data = projected_kernel_data
 
     @torch.no_grad()
-    def assert_constraints(self, eps=1e-6) -> list[str]:
+    def assert_constraints(self, eps: float = 1e-6) -> list[str]:
         """Asserts that layer satisfies specified constraints.
 
         This checks that weights at the indexes of monotonicity pairs are in the correct

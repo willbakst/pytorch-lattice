@@ -26,7 +26,7 @@ class CalibratedLattice(ConstrainedModule):
     should match the order in which they are defined in the `feature_configs`.
 
     Attributes:
-        - All `__init__` arguments.
+        All: `__init__` arguments.
         calibrators: A dictionary that maps feature names to their calibrators.
         lattice: The `Lattice` layer of the model.
         output_calibrator: The output `NumericalCalibrator` calibration layer. This
@@ -142,7 +142,7 @@ class CalibratedLattice(ConstrainedModule):
             self.output_calibrator.apply_constraints()
 
     @torch.no_grad()
-    def assert_constraints(self, eps=1e-6) -> dict[str, list[str]]:
+    def assert_constraints(self, eps: float = 1e-6) -> dict[str, list[str]]:
         """Asserts all layers within model satisfied specified constraints.
 
         Asserts monotonicity pairs and output bounds for categorical calibrators,
