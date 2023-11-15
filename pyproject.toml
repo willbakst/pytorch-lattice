@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pytorch-lattice"
-version = "0.0.3"
+version = "0.1.0"
 description = "A PyTorch Implementation Of Lattice Modeling Techniques"
 license = "MIT"
 authors = ["William Bakst <will@sotai.ai>"]

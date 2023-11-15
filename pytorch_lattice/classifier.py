@@ -102,7 +102,7 @@ class Classifier:
         self.model = model
         return self
 
-    def predict(self, X: pd.DataFrame, logits=False) -> np.ndarray:
+    def predict(self, X: pd.DataFrame, logits: bool = False) -> np.ndarray:
         """Returns predictions for the given data.
 
         Args:
@@ -114,7 +114,7 @@ class Classifier:
             raise RuntimeError("Cannot predict before fitting the model.")
 
         self.model.eval()
-        X_copy = X.copy()
+        X_copy = X[[feature.feature_name for feature in self.model.features]].copy()
         prepare_features(X_copy, self.model.features)
         X_tensor = torch.tensor(X_copy.values).double()
         with torch.no_grad():
@@ -201,7 +201,7 @@ class Classifier:
                 )
             else:  # numerical feature
                 if feature._monotonicity is not None and isinstance(
-                    feature._monotonicity, Monotonicity
+                    feature._monotonicity, str
                 ):
                     monotonicity = feature._monotonicity
                 else:

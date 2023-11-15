@@ -16,6 +16,8 @@ class ConstrainedModule(torch.nn.Module):
 
     @torch.no_grad()
     @abstractmethod
-    def assert_constraints(self, eps=1e-6) -> Union[list[str], dict[str, list[str]]]:
+    def assert_constraints(
+        self, eps: float = 1e-6
+    ) -> Union[list[str], dict[str, list[str]]]:
         """Asserts that the module satisfied specified constraints."""
         raise NotImplementedError()

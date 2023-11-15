@@ -1,8 +1,8 @@
 {
   "files.autoSave": "onFocusChange",
   "editor.rulers": [88],
-  "editor.formatOnSaveMode": "file",
   "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
   "files.insertFinalNewline": true,
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
@@ -12,5 +12,8 @@
       "source.organizeImports": true
     },
     "editor.defaultFormatter": "charliermarsh.ruff"
-  }
+  },
+  "[markdown]": {
+    "editor.formatOnSave": false
+  },
 }

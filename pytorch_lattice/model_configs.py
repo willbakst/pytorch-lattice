@@ -28,7 +28,7 @@ class LinearConfig(_BaseModelConfig):
     """Configuration for a calibrated linear model.
 
     Attributes:
-        - All `_BaseModelConfig` attributes.
+        All: `_BaseModelConfig` attributes.
         use_bias: Whether to use a bias term for the linear combination.
     """
 
@@ -40,7 +40,7 @@ class LatticeConfig(_BaseModelConfig):
     """Configuration for a calibrated lattice model.
 
     Attributes:
-        - All `_BaseModelConfig` attributes.
+        All: `_BaseModelConfig` attributes.
         kernel_init: The `LatticeInit` scheme to use to initialize the lattice kernel.
         interpolation: The `Interpolation` scheme to use in the lattice. Note that
             `HYPERCUBE` has exponential time complexity while `SIMPLEX` has

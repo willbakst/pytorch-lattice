@@ -39,6 +39,7 @@ def calibrator(
                     for i, ik in enumerate(input_keypoints)
                 ]
             )
+        plt.xticks(rotation=45)
         plt.bar(input_keypoints, output_keypoints)
     else:
         plt.plot(input_keypoints, output_keypoints)

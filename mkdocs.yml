@@ -3,74 +3,95 @@ site_name: PyTorch Lattice
 repo_name: pytorch-lattice
 repo_url: https://github.com/ControlAI/pytorch-lattice/
 theme:
-  name: material
-  icon:
-    repo: fontawesome/brands/github
-  features:
-    - content.code.annotation
-    - content.code.copy
-    - content.code.link
-    - navigation.footer
-    - navigation.sections
-    - navigation.tabs
-    - navigation.top
-    - search.highlight
-    - search.suggest
-    - toc.follow
-  language: en
-  palette:
-    - scheme: default
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-      primary: blue-grey
-      accent: deep-orange
-    - scheme: slate
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
-      primary: blue-grey
-      accent: deep-orange
-  font:
-    text: Roboto
-    code: Roboto Mono
+    name: material
+    icon:
+        repo: fontawesome/brands/github
+    features:
+        - content.code.annotation
+        - content.code.copy
+        - content.code.link
+        - navigation.footer
+        - navigation.sections
+        - navigation.tabs
+        - navigation.top
+        - search.highlight
+        - search.suggest
+        - toc.follow
+    language: en
+    palette:
+        - scheme: default
+          toggle:
+              icon: material/brightness-7
+              name: Switch to dark mode
+          primary: indigo
+          accent: indigo
+        - scheme: slate
+          toggle:
+              icon: material/brightness-4
+              name: Switch to light mode
+          primary: indigo
+          accent: indigo
+    font:
+        text: Roboto
+        code: Roboto Mono
 
 extra:
-  social:
-    - icon: fontawesome/brands/github-alt
-      link: https://github.com/ControlAI
-    - icon: fontawesome/brands/twitter
-      link: https://twitter.com/WilliamBakst
-    - icon: fontawesome/brands/linkedin
-      link: https://www.linkedin.com/in/wbakst/
+    social:
+        - icon: fontawesome/brands/github-alt
+          link: https://github.com/ControlAI
+        - icon: fontawesome/brands/twitter
+          link: https://twitter.com/WilliamBakst
+        - icon: fontawesome/brands/linkedin
+          link: https://www.linkedin.com/in/wbakst/
 
 markdown_extensions:
-  - pymdownx.highlight:
-      anchor_linenums: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - admonition
-  - pymdownx.arithmatex:
-      generic: true
-  - footnotes
-  - pymdownx.details
-  - pymdownx.superfences
-  - pymdownx.mark
-  - attr_list
-  - pymdownx.emoji:
-      emoji_index: !!python/name:material.extensions.emoji.twemoji
-      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+    - pymdownx.highlight:
+          anchor_linenums: true
+    - pymdownx.inlinehilite
+    - pymdownx.snippets
+    - admonition
+    - pymdownx.arithmatex:
+          generic: true
+    - footnotes
+    - pymdownx.details
+    - pymdownx.superfences
+    - pymdownx.mark
+    - attr_list
+    - pymdownx.emoji:
+          emoji_index: !!python/name:material.extensions.emoji.twemoji
+          emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+plugins:
+    - mkdocstrings:
+          handlers:
+              python:
+                  options:
+                      show_root_heading: true
+                      docstring_style: google
 
 nav:
-  - Get Started:
-      - Welcome to PyTorch Lattice: "README.md"
-      - Why use PyTorch Lattice: "why.md"
-      - Contributing: "contributing.md"
-      - How to help us!: "help.md"
-      - Changelog: "changelog.md"
-  - Concepts:
-      - Placeholder: "placeholder.md"
-  - Walkthroughs:
-      - Placeholder: "placeholder.md"
-  - API Reference:
-      - Placeholder: "placeholder.md"
+    - Get Started:
+          - Welcome to PyTorch Lattice: "README.md"
+          - Why use PyTorch Lattice: "WHY.md"
+          - Contributing: "CONTRIBUTING.md"
+          - How to help: "HELP.md"
+          - Changelog: "CHANGELOG.md"
+    - Concepts:
+          - Classifier: "concepts/classifier.md"
+          - Calibrators: "concepts/calibrators.md"
+          - Shape Constraints: "concepts/shape_constraints.md"
+          - Model Types: "concepts/model_types.md"
+          - Plotting: "concepts/plotting.md"
+    - Walkthroughs:
+          - UCI Adult Income: "walkthroughs/uci_adult_income.md"
+    - API Reference:
+          - layers: "api/layers.md"
+          - models: "api/models.md"
+          - utils: "api/utils.md"
+          - classifier: "api/classifier.md"
+          - constrained_module: "api/constrained_module.md"
+          - datasets: "api/datasets.md"
+          - enums: "api/enums.md"
+          - feature_config: "api/feature_config.md"
+          - model_configs: "api/model_configs.md"
+          - plots: "api/plots.md"
