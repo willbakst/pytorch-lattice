@@ -1,5 +1,3 @@
-from sklearn import metrics
-
 import pytorch_lattice as pyl
 
 # Load Data

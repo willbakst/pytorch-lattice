@@ -10,7 +10,6 @@ import pandas as pd
 import torch
 from tqdm import trange
 
-from .enums import Monotonicity
 from .feature_config import FeatureConfig
 from .model_configs import LatticeConfig, LinearConfig
 from .models import (
