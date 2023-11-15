@@ -76,7 +76,7 @@ When you first initialize a calibrator, all features will be initialized using d
 clf.configure("feature").monotonicity("increasing").num_keypoints(10)
 ```
 
-See [feature_configs](pytorch-lattice/api/feature_config/) for all of the available configuration options.
+See [feature_configs](/pytorch-lattice/api/feature_config/) for all of the available configuration options.
 
 ## Categorical Features
 
