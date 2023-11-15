@@ -5,7 +5,7 @@ A PyTorch implementation of constrained optimization and modeling techniques
 ---
 
 [![GitHub stars](https://img.shields.io/github/stars/ControlAI/pytorch-lattice.svg)](https://github.com/ControlAI/pytorch-lattice/stargazers)
-[![Documentation](https://img.shields.io/badge/docs-available-brightgreen)](https://broken.github.io/pytorch-lattice)
+[![Documentation](https://img.shields.io/badge/docs-available-brightgreen)](https://controlai.github.io/pytorch-lattice/)
 [![](https://github.com/ControlAI/pytorch-lattice/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/ControlAI/pytorch-lattice/actions/workflows/test.yml)
 [![GitHub issues](https://img.shields.io/github/issues/ControlAI/pytorch-lattice.svg)](https://github.com/ControlAI/pytorch-lattice/issues)
 [![Github discussions](https://img.shields.io/github/discussions/ControlAI/pytorch-lattice)](https:github.com/ControlAI/pytorch-lattice/discussions)
