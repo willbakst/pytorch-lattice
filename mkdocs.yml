@@ -66,6 +66,7 @@ markdown_extensions:
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
 plugins:
+  - search
   - mkdocstrings:
       handlers:
         python:
@@ -76,9 +77,9 @@ plugins:
 nav:
   - Get Started:
       - Welcome to PyTorch Lattice: "README.md"
-      - Why use PyTorch Lattice: "WHY.md"
-      - Contributing: "CONTRIBUTING.md"
-      - How to help: "HELP.md"
+      - Why use PyTorch Lattice: "why.md"
+      - Contributing: "contributing.md"
+      - How to help: "help.md"
   - Concepts:
       - Classifier: "concepts/classifier.md"
       - Calibrators: "concepts/calibrators.md"
