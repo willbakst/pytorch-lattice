@@ -92,6 +92,8 @@ You can see here how each category for `occupation` gets calibrated before going
 
 Interestingly, plotting the calibrator for `hours_per_week` shows that there's a flat region starting around ~52 hours. This indicates that there is a chance that the `hours_per_week` feature is not actually monotonically increasing, in which case you might consider training a new classifier where you do not constrain this feature.
 
+![Hours Per Week Calibrator](../img/hours_per_week_calibrator.png)
+
 When setting constraints, there are two things to keep in mind:
 
 1. Do you want to guarantee the constrained behavior regardless of performance? In this case, setting the constraint can make sure that model behavior matches your expectations on unseen examples, which is especially useful when using a model to make decisions.

@@ -1,6 +1,6 @@
 # Classifier
 
-The [`Classifier`](/pytorch-lattice/api/classifier) class is a high-level wrapper around the calibrated modeling functionality to make it extremely easy to fit a calibrated model to a classification task. The class uses declarative configuration and automatically handles the data preparation, feature configuration, model creation, and model training necessary for properly training a calibrated model.
+The [`Classifier`](../api/classifier.md) class is a high-level wrapper around the calibrated modeling functionality to make it extremely easy to fit a calibrated model to a classification task. The class uses declarative configuration and automatically handles the data preparation, feature configuration, model creation, and model training necessary for properly training a calibrated model.
 
 ## Initialization
 
@@ -66,7 +66,7 @@ model_config = pyl.model_configs.LinearConfig(use_bias=False)
 clf = pyl.Classifier(["list", "of", "features"], model_config)
 ```
 
-See [Model Types](model_types.md) for more information on the supported model types and [model_configs](/pytorch-lattice/api/model_configs) for more information on configuring these models in a classifier. 
+See [Model Types](model_types.md) for more information on the supported model types and [model_configs](../api/model_configs.md) for more information on configuring these models in a classifier. 
 
 ## Feature Configuration
 
@@ -76,7 +76,7 @@ When you first initialize a calibrator, all features will be initialized using d
 clf.configure("feature").monotonicity("increasing").num_keypoints(10)
 ```
 
-See [feature_configs](pytorch-lattice/api/feature_config/) for all of the available configuration options.
+See [feature_configs](../api/feature_config.md) for all of the available configuration options.
 
 ## Categorical Features
 

@@ -2,6 +2,10 @@
 
 A PyTorch implementation of constrained optimization and modeling techniques
 
+- **Transparent Models**: Glassbox models to provide increased interpretability and insights into your ML models.
+- **Shape Constraints**: Embed domain knowledge directly into the model through feature constraints.
+- **Rate Constraints (Coming soon...)**: Optimize any PyTorch model under a set of constraints on rates (e.g. FPR < 1%). Rates can be calculated both for the entire dataset as well as specific slices.
+
 ---
 
 [![GitHub stars](https://img.shields.io/github/stars/ControlAI/pytorch-lattice.svg)](https://github.com/ControlAI/pytorch-lattice/stargazers)
@@ -73,11 +77,11 @@ pyl.plots.calibrator(clf.model, "thal")
 
 ## Contributing
 
-PyTorch Lattice welcomes contributions from the community! See the [contribution guide](CONTRIBUTING.md) for more information on the development workflow. For bugs and feature requests, visit our [GitHub Issues](https://github.com/ControlAI/pytorch-lattice/issues) and check out our [templates](https://github.com/ControlAI/pytorch-lattice/tree/main/.github/ISSUE_TEMPLATES).
+PyTorch Lattice welcomes contributions from the community! See the [contribution guide](contributing.md) for more information on the development workflow. For bugs and feature requests, visit our [GitHub Issues](https://github.com/ControlAI/pytorch-lattice/issues) and check out our [templates](https://github.com/ControlAI/pytorch-lattice/tree/main/.github/ISSUE_TEMPLATES).
 
 ## How To Help
 
-Any and all help is greatly appreciated! Check out our page on [how you can help](HELP.md).
+Any and all help is greatly appreciated! Check out our page on [how you can help](help.md).
 
 ## Roadmap
 
