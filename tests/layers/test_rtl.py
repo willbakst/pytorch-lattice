@@ -101,7 +101,7 @@ def test_initialization(
                         == Monotonicity.INCREASING
                     )
                 else:
-                    assert rtl.monotonicities[single_lattice_indices[i]] == None
+                    assert rtl.monotonicities[single_lattice_indices[i]] is None
 
         assert len(lattice.monotonicities) == len(lattice.lattice_sizes)
         assert (
@@ -290,8 +290,8 @@ def test_output_monotonicities(
     assert rtl.output_monotonicities() == expected_out
 
 
-def test_constrain():
-    """Tests RTL constrain function."""
+def test_apply_constraints():
+    """Tests RTL apply_constraints function."""
     rtl = RTL(
         monotonicities=[None, Monotonicity.INCREASING],
         num_lattices=3,
@@ -300,10 +300,10 @@ def test_constrain():
     mock_constrains = []
     for lattice, _ in rtl._lattice_layers.values():
         mock_constrain = Mock()
-        lattice.constrain = mock_constrain
+        lattice.apply_constraints = mock_constrain
         mock_constrains.append(mock_constrain)
 
-    rtl.constrain()
+    rtl.apply_constraints()
     for mock_constrain in mock_constrains:
         mock_constrain.assert_called_once()
 

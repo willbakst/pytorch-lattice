@@ -1,5 +1,6 @@
 copyright: Copyright &copy; 2023 SOTAI Labs Inc.
 site_name: PyTorch Lattice
+site_url: https://controlai.github.io/pytorch-lattice
 repo_name: pytorch-lattice
 repo_url: https://github.com/ControlAI/pytorch-lattice/
 theme:
@@ -23,14 +24,14 @@ theme:
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
-      primary: blue-grey
-      accent: deep-orange
+      primary: indigo
+      accent: indigo
     - scheme: slate
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
-      primary: blue-grey
-      accent: deep-orange
+      primary: indigo
+      accent: indigo
   font:
     text: Roboto
     code: Roboto Mono
@@ -43,6 +44,9 @@ extra:
       link: https://twitter.com/WilliamBakst
     - icon: fontawesome/brands/linkedin
       link: https://www.linkedin.com/in/wbakst/
+  analytics:
+    provider: google
+    property: G-Q8WNH5KD11
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -61,16 +65,37 @@ markdown_extensions:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_root_heading: true
+            docstring_style: google
+
 nav:
   - Get Started:
       - Welcome to PyTorch Lattice: "README.md"
       - Why use PyTorch Lattice: "why.md"
       - Contributing: "contributing.md"
-      - How to help us!: "help.md"
-      - Changelog: "changelog.md"
+      - How to help: "help.md"
   - Concepts:
-      - Placeholder: "placeholder.md"
+      - Classifier: "concepts/classifier.md"
+      - Calibrators: "concepts/calibrators.md"
+      - Shape Constraints: "concepts/shape_constraints.md"
+      - Model Types: "concepts/model_types.md"
+      - Plotting: "concepts/plotting.md"
   - Walkthroughs:
-      - Placeholder: "placeholder.md"
+      - UCI Adult Income: "walkthroughs/uci_adult_income.md"
   - API Reference:
-      - Placeholder: "placeholder.md"
+      - layers: "api/layers.md"
+      - models: "api/models.md"
+      - utils: "api/utils.md"
+      - classifier: "api/classifier.md"
+      - constrained_module: "api/constrained_module.md"
+      - datasets: "api/datasets.md"
+      - enums: "api/enums.md"
+      - feature_config: "api/feature_config.md"
+      - model_configs: "api/model_configs.md"
+      - plots: "api/plots.md"

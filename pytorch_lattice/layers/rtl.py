@@ -1,11 +1,12 @@
-"""Random Tiny Lattice module for use in calibrated modeling.
+"""A PyTorch module implementing a calibrated modeling layer for Random Tiny Lattices.
 
-PyTorch implementation of a RTL layer.
-This layer takes several inputs which would otherwise be slow to run on a single lattice
-and runs random subsets on an assortment of Random Tiny Lattices as an optimization.
+This module implements an ensemble of tiny lattices that each operate on a subset of the
+inputs. It utilizes the multi-unit functionality of the Lattice module to better
+optimize speed performance by putting feature subsets that have the same constraint
+structure into the same Lattice module as multiple units.
 """
 import logging
-from typing import List, Optional
+from typing import Optional, Union
 
 import numpy as np
 import torch
@@ -15,45 +16,38 @@ from .lattice import Lattice
 
 
 class RTL(torch.nn.Module):
-    """An RTL Module.
+    """A module that efficiently implements Random Tiny Lattices.
 
-    Layer takes a number of features that would otherwise be too many to assign to
-    a single lattice, and instead assigns small random subsets of the features to an
-    ensemble of smaller lattices. The features are shuffled and uniformly repeated
-    if there are more slots in the RTL than features.
+    This module creates an ensemble of lattices where each lattice in the ensemble takes
+    as input a subset of the input features. For further efficiency, input subsets with
+    the same constraint structure all go through the same lattice as multiple units in
+    parallel. When creating the ensemble structure, features are shuffled and uniformly
+    repeated if there are more available slots in the ensemble structure than there are
+    features.
 
     Attributes:
       - All `__init__` arguments.
-      - _lattice_layers: `dict` of form `{monotonic_count: (lattice, groups)}` which
-      keeps track of the RTL structure. Features are indexed then randomly grouped
-      together to be assigned to a lattice - groups with the same number of
-      monotonic features can be put into the same lattice for further optimization,
-      and are thus stored together in the dict according to `monotonic_count`.
 
     Example:
-    `python
-    inputs=torch.tensor(...) # shape: (batch_size, D)
-    monotonicities = List[Monotonicity...] # len: D
-    rtl1=RTL(
+    ```python
+    inputs=torch.tensor(...)  # shape: (batch_size, D)
+    monotonicities = List[Monotonicity...]  # len: D
+    random_tiny_lattices = RTL(
       monotonicities,
-      num_lattices = 5
-      lattice_rank = 3, # num_lattices * lattice_rank must be greater than D
+      num_lattices=5
+      lattice_rank=3,  # num_lattices * lattice_rank must be greater than D
     )
-    output1 = rtl1(inputs)
+    output1 = random_tiny_lattices(inputs)
 
-    # If you want to pass through consecutive RTLs
-
-    rtl2 = RTL(
-      monotonicities=rtl1.output_monotonicities() # len: rtl1.num_lattices
-      ...
-    )
-    output2 = RTL2(output1)
-    `
+    # You can stack RTL modules based on the previous RTL's output monotonicities.
+    rtl2 = RTL(random_tiny_lattices.output_monotonicities(), ...)
+    outputs2 = rtl2(outputs)
+    ```
     """
 
     def __init__(
         self,
-        monotonicities: List[Monotonicity],
+        monotonicities: list[Monotonicity],
         num_lattices: int,
         lattice_rank: int,
         lattice_size: int = 2,
@@ -68,7 +62,7 @@ class RTL(torch.nn.Module):
         """Initializes an instance of 'RTL'.
 
         Args:
-            monotonicities: `List` of `Monotonicity.INCREASING` or `None`
+            monotonicities: List of `Monotonicity.INCREASING` or `None`
               indicating monotonicities of input features, ordered respectively.
             num_lattices: number of lattices in RTL structure.
             lattice_rank: number of inputs for each lattice in RTL structure.
@@ -81,7 +75,7 @@ class RTL(torch.nn.Module):
             random_seed: seed used for shuffling.
 
         Raises:
-            ValueError: if size of RTL, determined by `num_lattices * lattice_rank`, is
+            ValueError: If size of RTL, determined by `num_lattices * lattice_rank`, is
              too small to support the number of input features.
         """
         super().__init__()
@@ -108,7 +102,6 @@ class RTL(torch.nn.Module):
         )
         np.random.seed(self.random_seed)
         np.random.shuffle(rtl_indices)
-        # split_rtl_indices = np.split(rtl_indices, num_lattices)
         split_rtl_indices = [list(arr) for arr in np.split(rtl_indices, num_lattices)]
         swapped_rtl_indices = self._ensure_unique_sublattices(split_rtl_indices)
         monotonicity_groupings = {}
@@ -149,14 +142,14 @@ class RTL(torch.nn.Module):
             )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Forward method computed by using forward methods of each lattice in RTL.
+        """Forward method computed by using forward methods of each lattice in ensemble.
 
         Args:
             x: input tensor of feature values with shape `(batch_size, num_features)`.
 
         Returns:
-            torch.Tensor containing the outputs of each lattice within RTL structure. If
-            `average_outputs == True`, then all outputs are averaged into a tensor of
+            `torch.Tensor` containing the outputs of each lattice within RTL structure.
+            If `average_outputs == True`, then all outputs are averaged into a tensor of
             shape `(batch_size, 1)`. If `average_outputs == False`, shape of tensor is
             `(batch_size, num_lattices)`.
         """
@@ -175,7 +168,7 @@ class RTL(torch.nn.Module):
         return result
 
     @torch.no_grad()
-    def output_monotonicities(self) -> List[Monotonicity]:
+    def output_monotonicities(self) -> list[Union[Monotonicity, None]]:
         """Gives the monotonicities of the outputs of RTL.
 
         Returns:
@@ -194,13 +187,13 @@ class RTL(torch.nn.Module):
         return monotonicities
 
     @torch.no_grad()
-    def constrain(self) -> None:
+    def apply_constraints(self) -> None:
         """Enforces constraints for each lattice in RTL."""
         for lattice, _ in self._lattice_layers.values():
-            lattice.constrain()
+            lattice.apply_constraints()
 
     @torch.no_grad()
-    def assert_constraints(self, eps=1e-6) -> List[List[str]]:
+    def assert_constraints(self, eps: float = 1e-6) -> list[list[str]]:
         """Asserts that each Lattice in RTL satisfies all constraints.
 
         Args:
@@ -216,9 +209,9 @@ class RTL(torch.nn.Module):
 
     @staticmethod
     def _ensure_unique_sublattices(
-        rtl_indices: List[List[int]],
+        rtl_indices: list[list[int]],
         max_swaps: int = 10000,
-    ) -> List[List[int]]:
+    ) -> list[list[int]]:
         """Attempts to ensure every lattice in RTL structure contains unique features.
 
         Args:

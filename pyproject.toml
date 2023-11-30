@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "pytorch-lattice"
-version = "0.0.3"
+version = "0.1.0"
 description = "A PyTorch Implementation Of Lattice Modeling Techniques"
 license = "MIT"
 authors = ["William Bakst <will@sotai.ai>"]
 readme = "docs/README.md"
-packages = [{include = "pytorch_lattice"}]
+packages = [{ include = "pytorch_lattice" }]
 repository = "https://github.com/ControlAI/pytorch-lattice"
 
 [tool.poetry.dependencies]
@@ -72,7 +72,7 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 [tool.mypy]
-exclude = ["venv"]
+exclude = ["examples", "venv"]
 
 [build-system]
 requires = ["poetry-core"]
