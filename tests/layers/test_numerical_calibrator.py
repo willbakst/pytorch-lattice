@@ -4,6 +4,7 @@ import pytest
 import torch
 
 from pytorch_lattice import Monotonicity, NumericalCalibratorInit
+from pytorch_lattice.enums import InputKeypointsType
 from pytorch_lattice.layers import NumericalCalibrator
 
 from ..testing_utils import train_calibrated_module
@@ -92,12 +93,12 @@ def test_initialization(
         ),
     ],
 )
-def test_initialization_learned_inputs(
+def test_initialization_learned_input_keypoints(
     input_keypoints, expected_lengths, expected_logits
 ):
-    """Tests logic specific to learned interior initialization."""
+    """Tests logic specific to learned input keypoint initialization."""
     calibrator = NumericalCalibrator(
-        input_keypoints=input_keypoints, input_keypoints_type="learned_interior"
+        input_keypoints=input_keypoints, input_keypoints_type=InputKeypointsType.LEARNED
     )
 
     assert torch.allclose(calibrator._lengths, expected_lengths)
@@ -212,13 +213,15 @@ def test_forward(input_keypoints, kernel_init, kernel_data, inputs, expected_out
     "x",
     [(torch.tensor([[1.1]])), (torch.tensor([[1.2], [1.3]]))],
 )
-def test_forward_learned_inputs(input_keypoints, x):
-    """Tests that interior keypoints are properly reconstructed for learned inputs."""
+def test_forward_learned_input_keypoints(input_keypoints, x):
+    """Tests that learned input keypoints are properly reconstructed in forward."""
     calibrator = NumericalCalibrator(
-        input_keypoints, input_keypoints_type="learned_interior"
+        input_keypoints, input_keypoints_type=InputKeypointsType.LEARNED
     )
     calibrator.forward(x)
-    assert torch.sum(calibrator._lengths) == calibrator._keypoint_range
+    assert (
+        abs(torch.sum(calibrator._lengths).item() - calibrator._keypoint_range) < 1e-6
+    )
     assert torch.allclose(
         torch.from_numpy(input_keypoints[:-1]).double(),
         calibrator._interpolation_keypoints,
@@ -896,8 +899,13 @@ def test_training():
     )
 
 
-def test_training_learned_interior():
-    """Tests that the `NumericalCalibrator` can learn interior keypoints on a PWL."""
+def test_training_learned_interior_input_keypoints():
+    """Tests that `NumericalCalibrator` successfully learns interior input keypoints.
+    The calibrator is given a piecewise linear step function that starts at (0,0),
+    linearly rises from (1/3, 0) to (2/3, 1), then stays at 1. The calibrator is
+    initialized with inaccurate interior keypoints [0.1, 0.9] and then tested to see if
+    it can learn the ideal interior keypoint positions of [0.33, 0.66].
+    """
     num_examples = 1000
     output_min, output_max = 0.0, 1.0
     training_examples = torch.linspace(output_min, output_max, num_examples)[
@@ -920,7 +928,7 @@ def test_training_learned_interior():
         output_min=output_min,
         output_max=output_max,
         monotonicity=None,
-        input_keypoints_type="learned_interior",
+        input_keypoints_type=InputKeypointsType.LEARNED,
     )
 
     loss_fn = torch.nn.MSELoss()
@@ -940,5 +948,5 @@ def test_training_learned_interior():
     assert torch.allclose(
         calibrator._interpolation_keypoints,
         torch.tensor([0, 1 / 3, 2 / 3]).double(),
-        atol=0.05,
+        atol=0.02,
     )

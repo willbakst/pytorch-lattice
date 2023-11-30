@@ -11,7 +11,7 @@ import numpy as np
 import torch
 
 from ..constrained_module import ConstrainedModule
-from ..enums import Monotonicity, NumericalCalibratorInit
+from ..enums import InputKeypointsType, Monotonicity, NumericalCalibratorInit
 
 
 class NumericalCalibrator(ConstrainedModule):
@@ -23,8 +23,6 @@ class NumericalCalibrator(ConstrainedModule):
 
     Attributes:
         All: `__init__` arguments.
-        interpolation_logits: `torch.nn.Parameter` that stores the logits representing
-            keypoint values when `input_keypoints_type == "learned_interior"`.
         kernel: `torch.nn.Parameter` that stores the piece-wise linear function weights.
         missing_output: `torch.nn.Parameter` that stores the output learned for any
             missing inputs. Only available if `missing_input_value` is provided.
@@ -52,7 +50,7 @@ class NumericalCalibrator(ConstrainedModule):
         monotonicity: Optional[Monotonicity] = None,
         kernel_init: NumericalCalibratorInit = NumericalCalibratorInit.EQUAL_HEIGHTS,
         projection_iterations: int = 8,
-        input_keypoints_type="fixed",
+        input_keypoints_type: InputKeypointsType = InputKeypointsType.FIXED,
     ) -> None:
         """Initializes an instance of `NumericalCalibrator`.
 
@@ -70,14 +68,12 @@ class NumericalCalibrator(ConstrainedModule):
             kernel_init: Initialization scheme to use for the kernel.
             projection_iterations: Number of times to run Dykstra's projection
                 algorithm when applying constraints.
-            input_keypoints_type: Either "fixed" or "learned_interior". If
-                "learned_interior", keypoints follow "input_keypoints" for
-                initialization but vary during training, except the first and last
-                keypoints.
+            input_keypoints_type: `InputKeypointType` of either `FIXED` or `LEARNED`. If
+                `LEARNED`, keypoints other than the first or last will follow
+                `input_keypoints` for initialization but adapt during training.
 
         Raises:
-            ValueError: If `kernel_init` is invalid, or if `input_keypoints_type` is
-                invalid.
+            ValueError: If `kernel_init` is invalid.
         """
         super().__init__()
 
@@ -103,7 +99,7 @@ class NumericalCalibrator(ConstrainedModule):
 
         self._interpolation_keypoints = torch.from_numpy(input_keypoints[:-1])
         self._lengths = torch.from_numpy(input_keypoints[1:] - input_keypoints[:-1])
-        if self.input_keypoints_type == "learned_interior":
+        if self.input_keypoints_type == InputKeypointsType.LEARNED:
             self._keypoint_min = input_keypoints[0]
             self._keypoint_range = input_keypoints[-1] - input_keypoints[0]
             initial_logits = torch.from_numpy(
@@ -154,7 +150,7 @@ class NumericalCalibrator(ConstrainedModule):
         Returns:
             torch.Tensor of shape `(batch_size, 1)` containing calibrated input values.
         """
-        if self.input_keypoints_type == "learned_interior":
+        if self.input_keypoints_type == InputKeypointsType.LEARNED:
             softmaxed_logits = torch.nn.functional.softmax(
                 self._interpolation_logits, dim=-1
             )

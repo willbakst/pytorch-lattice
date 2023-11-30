@@ -33,11 +33,12 @@ class InputKeypointsType(_Enum):
     """The type of input keypoints to use.
 
     - FIXED: the input keypoints will be fixed during initialization.
+    - LEARNED: the interior keypoints will learn through training to best fit the
+        piecewise linear function.
     """
 
     FIXED = "fixed"
-    # TODO: add learned interior functionality
-    # LEARNED = "learned_interior"
+    LEARNED = "learned"
 
 
 class NumericalCalibratorInit(_Enum):
