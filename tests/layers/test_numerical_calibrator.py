@@ -4,6 +4,7 @@ import pytest
 import torch
 
 from pytorch_lattice import Monotonicity, NumericalCalibratorInit
+from pytorch_lattice.enums import InputKeypointsType
 from pytorch_lattice.layers import NumericalCalibrator
 
 from ..testing_utils import train_calibrated_module
@@ -73,6 +74,35 @@ def test_initialization(
     assert calibrator.monotonicity == monotonicity
     assert calibrator.kernel_init == kernel_init
     assert calibrator.projection_iterations == projection_iterations
+
+
+@pytest.mark.parametrize(
+    "input_keypoints, expected_lengths, expected_logits",
+    [
+        (
+            np.linspace(1.0, 5.0, num=5),
+            torch.tensor([1.0, 1.0, 1.0, 1.0], dtype=torch.double),
+            torch.from_numpy(np.log([0.25, 0.25, 0.25, 0.25])).double(),
+        ),
+        (
+            np.array([0.0, 1.5, 2.0, 2.4, 3.0]),
+            torch.tensor([1.5, 0.5, 0.4, 0.6], dtype=torch.double),
+            torch.from_numpy(
+                np.log([1.5 / 3.0, 0.5 / 3.0, 0.4 / 3.0, 0.6 / 3.0])
+            ).double(),
+        ),
+    ],
+)
+def test_initialization_learned_input_keypoints(
+    input_keypoints, expected_lengths, expected_logits
+):
+    """Tests logic specific to learned input keypoint initialization."""
+    calibrator = NumericalCalibrator(
+        input_keypoints=input_keypoints, input_keypoints_type=InputKeypointsType.LEARNED
+    )
+
+    assert torch.allclose(calibrator._lengths, expected_lengths)
+    assert torch.allclose(calibrator._interpolation_logits, expected_logits)
 
 
 @pytest.mark.parametrize(
@@ -168,6 +198,34 @@ def test_forward(input_keypoints, kernel_init, kernel_data, inputs, expected_out
         calibrator.kernel.data = kernel_data
     outputs = calibrator.forward(inputs)
     assert torch.allclose(outputs, expected_outputs)
+
+
+@pytest.mark.parametrize(
+    "input_keypoints",
+    [
+        (np.linspace(1, 4, num=4)),
+        (np.array([0.0, 1.2, 2.0, 3.7, 5.0])),
+        (np.linspace(1, 20, num=45)),
+        (np.array([0.0, 0.02, 0.023, 3.7, 5.0, 7.9, 9.9, 10.3, 12.4, 15.6, 51.2])),
+    ],
+)
+@pytest.mark.parametrize(
+    "x",
+    [(torch.tensor([[1.1]])), (torch.tensor([[1.2], [1.3]]))],
+)
+def test_forward_learned_input_keypoints(input_keypoints, x):
+    """Tests that learned input keypoints are properly reconstructed in forward."""
+    calibrator = NumericalCalibrator(
+        input_keypoints, input_keypoints_type=InputKeypointsType.LEARNED
+    )
+    calibrator.forward(x)
+    assert (
+        abs(torch.sum(calibrator._lengths).item() - calibrator._keypoint_range) < 1e-6
+    )
+    assert torch.allclose(
+        torch.from_numpy(input_keypoints[:-1]).double(),
+        calibrator._interpolation_keypoints,
+    )
 
 
 @pytest.mark.parametrize(
@@ -838,4 +896,57 @@ def test_training():
     keypoints_outputs = calibrator.keypoints_outputs()
     assert torch.allclose(
         torch.absolute(keypoints_inputs), keypoints_outputs, atol=2e-2
+    )
+
+
+def test_training_learned_interior_input_keypoints():
+    """Tests that `NumericalCalibrator` successfully learns interior input keypoints.
+    The calibrator is given a piecewise linear step function that starts at (0,0),
+    linearly rises from (1/3, 0) to (2/3, 1), then stays at 1. The calibrator is
+    initialized with inaccurate interior keypoints [0.1, 0.9] and then tested to see if
+    it can learn the ideal interior keypoint positions of [0.33, 0.66].
+    """
+    num_examples = 1000
+    output_min, output_max = 0.0, 1.0
+    training_examples = torch.linspace(output_min, output_max, num_examples)[
+        :, None
+    ].double()
+    training_labels = torch.where(
+        training_examples < 1 / 3,
+        torch.zeros_like(training_examples),
+        torch.where(
+            training_examples > 2 / 3,
+            torch.ones_like(training_examples),
+            3 * training_examples - 1,
+        ),
+    ).double()
+    noise = torch.randn_like(training_labels) * 0.05
+    training_labels += noise
+
+    calibrator = NumericalCalibrator(
+        np.array([0.0, 0.1, 0.9, 1.0]),
+        output_min=output_min,
+        output_max=output_max,
+        monotonicity=None,
+        input_keypoints_type=InputKeypointsType.LEARNED,
+    )
+
+    loss_fn = torch.nn.MSELoss()
+    optimizer = torch.optim.Adam(calibrator.parameters(), lr=1e-3)
+
+    train_calibrated_module(
+        calibrator,
+        training_examples,
+        training_labels,
+        loss_fn,
+        optimizer,
+        300,  # Number of epochs
+        num_examples // 10,  # Batch size
+    )
+
+    # Test that the learned keypoints roughly match the expected ones
+    assert torch.allclose(
+        calibrator._interpolation_keypoints,
+        torch.tensor([0, 1 / 3, 2 / 3]).double(),
+        atol=0.02,
     )
