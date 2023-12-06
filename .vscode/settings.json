@@ -1,6 +1,9 @@
 {
   "files.autoSave": "onFocusChange",
-  "editor.rulers": [88],
+  "editor.rulers": [
+    88
+  ],
+  "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "file",
   "files.insertFinalNewline": true,
   "python.testing.unittestEnabled": false,
