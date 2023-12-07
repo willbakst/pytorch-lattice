@@ -151,7 +151,7 @@ class NumericalCalibrator(ConstrainedModule):
             torch.Tensor of shape `(batch_size, 1)` containing calibrated input values.
         """
         if self.input_keypoints_type == InputKeypointsType.LEARNED:
-            self._update_from_logits()
+            self._calculate_lengths_and_interpolation_keypoints()
 
         interpolation_weights = (x - self._interpolation_keypoints) / self._lengths
         interpolation_weights = torch.minimum(interpolation_weights, torch.tensor(1.0))
@@ -294,7 +294,7 @@ class NumericalCalibrator(ConstrainedModule):
     def keypoints_inputs(self) -> torch.Tensor:
         """Returns tensor of keypoint inputs."""
         if self.input_keypoints_type == InputKeypointsType.LEARNED:
-            self._update_from_logits()
+            self._calculate_lengths_and_interpolation_keypoints()
 
         return torch.cat(
             (
@@ -423,7 +423,7 @@ class NumericalCalibrator(ConstrainedModule):
             bias, heights = -bias, -heights
         return bias, heights
 
-    def _update_from_logits(self) -> None:
+    def _calculate_lengths_and_interpolation_keypoints(self) -> None:
         """Makes necessary updates according to most recent self._interpolation_logits.
 
         If running the layer with `InputKeyPointType.LEARNED.`, this method will ensure
