@@ -11,11 +11,11 @@
   "[python]": {
     "editor.tabSize": 4,
     "editor.codeActionsOnSave": {
-      "source.organizeImports": true
+      "source.organizeImports": "explicit"
     },
     "editor.defaultFormatter": "charliermarsh.ruff"
   },
   "[markdown]": {
     "editor.formatOnSave": false
-  },
+  }
 }
