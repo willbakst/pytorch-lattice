@@ -1,8 +1,8 @@
-copyright: Copyright &copy; 2023 SOTAI Labs Inc.
+copyright: Copyright &copy; 2023 William Bakst.
 site_name: PyTorch Lattice
-site_url: https://controlai.github.io/pytorch-lattice
+site_url: https://willbakst.github.io/pytorch-lattice
 repo_name: pytorch-lattice
-repo_url: https://github.com/ControlAI/pytorch-lattice/
+repo_url: https://github.com/willbakst/pytorch-lattice/
 theme:
   name: material
   icon:
@@ -39,7 +39,7 @@ theme:
 extra:
   social:
     - icon: fontawesome/brands/github-alt
-      link: https://github.com/ControlAI
+      link: https://github.com/willbakst
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/WilliamBakst
     - icon: fontawesome/brands/linkedin
