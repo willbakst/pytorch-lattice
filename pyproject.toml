@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "pytorch-lattice"
-version = "0.1.0"
+version = "0.1.1"
 description = "A PyTorch Implementation Of Lattice Modeling Techniques"
 license = "MIT"
-authors = ["William Bakst <will@sotai.ai>"]
+authors = ["William Bakst <william@mirascope.io>"]
 readme = "docs/README.md"
 packages = [{ include = "pytorch_lattice" }]
-repository = "https://github.com/ControlAI/pytorch-lattice"
+repository = "https://github.com/willbakst/pytorch-lattice"
 
 [tool.poetry.dependencies]
 python = ">=3.9, <=3.12"
